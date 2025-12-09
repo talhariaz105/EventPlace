@@ -36,6 +36,7 @@ exports.register = (0, catchAsync_1.default)(async (req, res) => {
 });
 exports.loginWithGoogle = (0, catchAsync_1.default)(async (req, res) => {
     const user = await user_1.userService.loginWithGoogle(req.body);
+    console.log("Google login user:", user);
     const tokens = await token_1.tokenService.generateAuthTokens(user);
     res.status(http_status_1.default.CREATED).send({ user, tokens });
 });

@@ -44,7 +44,7 @@ export const registerUser = async (userBody: NewRegisteredUser): Promise<IUserDo
     throw new ApiError('Email already taken', httpStatus.BAD_REQUEST);
   }
   
-  const user = await User.create({ ...userBody, role: 'admin', isEmailVerified: false, providers: ['local'] });
+  const user = await User.create({ ...userBody,  isEmailVerified: false, providers: ['local'] });
   
   return user;
 };

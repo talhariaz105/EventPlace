@@ -19,6 +19,7 @@ const registerBody = {
     profilePictureKey: joi_1.default.string().optional(),
     isDeleted: joi_1.default.boolean().default(false),
     orgName: joi_1.default.string().optional(),
+    role: joi_1.default.string().required(),
 };
 exports.register = {
     body: joi_1.default.object().keys(registerBody),

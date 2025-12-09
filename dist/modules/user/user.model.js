@@ -85,7 +85,7 @@ const userSchema = new mongoose_1.default.Schema({
     role: {
         type: String,
         enum: roles_1.roles,
-        default: 'admin'
+        default: 'customer',
     },
     isEmailVerified: {
         type: Boolean,
@@ -93,8 +93,8 @@ const userSchema = new mongoose_1.default.Schema({
     },
     status: {
         type: String,
-        enum: ['active', 'inactive'],
-        default: 'active'
+        enum: ['active', 'inactive', 'pending'],
+        default: 'pending'
     },
     isDeleted: {
         type: Boolean,

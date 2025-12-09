@@ -44,11 +44,6 @@ exports.createUser = (0, catchAsync_1.default)(async (req, res) => {
         createdBy: req.user._id,
         ownerId
     });
-    res.locals["message"] = "create user";
-    res.locals["documentId"] = user._id;
-    res.locals["collectionName"] = "User";
-    res.locals["changes"] = user;
-    res.locals['logof'] = req.user._id || null;
     res.status(http_status_1.default.CREATED).send(user);
 });
 exports.getUsers = (0, catchAsync_1.default)(async (req, res) => {
@@ -108,11 +103,6 @@ exports.updateUser = (0, catchAsync_1.default)(async (req, res) => {
         if (!user) {
             throw new ApiError_1.default('User not found', http_status_1.default.NOT_FOUND);
         }
-        res.locals["message"] = "update user";
-        res.locals["documentId"] = user._id;
-        res.locals["collectionName"] = "User";
-        res.locals["changes"] = user;
-        res.locals['logof'] = req.user._id || null;
         res.send(user);
     }
 });
@@ -121,11 +111,6 @@ exports.updateMe = (0, catchAsync_1.default)(async (req, res) => {
     if (!user) {
         throw new ApiError_1.default('User not found', http_status_1.default.NOT_FOUND);
     }
-    res.locals["message"] = "update user";
-    res.locals["documentId"] = user._id;
-    res.locals["collectionName"] = "User";
-    res.locals["changes"] = user;
-    res.locals['logof'] = req.user._id || null;
     res.send(user);
 });
 exports.deleteUser = (0, catchAsync_1.default)(async (req, res) => {
@@ -134,11 +119,6 @@ exports.deleteUser = (0, catchAsync_1.default)(async (req, res) => {
         if (!user) {
             throw new ApiError_1.default('User not found', http_status_1.default.NOT_FOUND);
         }
-        res.locals["message"] = "delete user";
-        res.locals["documentId"] = user._id;
-        res.locals["collectionName"] = "User";
-        res.locals["changes"] = { isDeleted: true };
-        res.locals['logof'] = req.user._id || null;
         res.status(http_status_1.default.NO_CONTENT).send();
     }
 });

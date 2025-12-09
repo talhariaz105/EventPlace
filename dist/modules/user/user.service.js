@@ -8,7 +8,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const user_model_1 = __importDefault(require("./user.model"));
 const ApiError_1 = __importDefault(require("../errors/ApiError"));
 const axios_1 = __importDefault(require("axios"));
-const user_subAdmin_1 = __importDefault(require("./user.subAdmin"));
+const user_model_2 = __importDefault(require("./user.model"));
 const email_service_1 = require("../email/email.service");
 const token_1 = require("../token");
 /**
@@ -20,12 +20,12 @@ const createUser = async (userBody) => {
     if (await user_model_1.default.isEmailTaken(userBody.email)) {
         throw new ApiError_1.default('Email already taken', http_status_1.default.BAD_REQUEST);
     }
-    const user = await user_subAdmin_1.default.create({ ...userBody, role: 'subAdmin' });
+    const user = await user_model_2.default.create({ ...userBody, role: 'subAdmin' });
     console.log('user create before create token', user);
     const inviteToken = await token_1.tokenService.generateInviteToken(userBody.email);
     const inviteUrl = `${process.env['CLIENT_URL']}/invite?email=${encodeURIComponent(userBody.email)}&token=${inviteToken}`;
     const htmlbodyforsendpassword = `
-    <p>Welcome to Tellust, ${userBody.name}!</p>
+    <p>Welcome to EventPlace, ${userBody.name}!</p>
     <p>Email: ${userBody.email}</p>
     <p>Please click the button below to accept your invitation and set your password or proceed with Google:</p>
     <a href="${inviteUrl}" style="display:inline-block;padding:10px 20px;background:#007bff;color:#fff;text-decoration:none;border-radius:4px;">Accept Invitation</a>
@@ -44,7 +44,7 @@ const registerUser = async (userBody) => {
     if (await user_model_1.default.isEmailTaken(userBody.email)) {
         throw new ApiError_1.default('Email already taken', http_status_1.default.BAD_REQUEST);
     }
-    const user = await user_model_1.default.create({ ...userBody, role: 'admin', isEmailVerified: false, providers: ['local'] });
+    const user = await user_model_1.default.create({ ...userBody, isEmailVerified: false, providers: ['local'] });
     return user;
 };
 exports.registerUser = registerUser;
@@ -64,13 +64,14 @@ const googleprofiledata = async (access_token) => {
 };
 exports.googleprofiledata = googleprofiledata;
 const loginWithGoogle = async (body) => {
-    const { access_token } = body;
+    const { access_token, role } = body;
     if (!access_token) {
         throw new ApiError_1.default('Access token is required', http_status_1.default.BAD_REQUEST, { access_token: 'access_token is required' });
     }
     let userData;
     try {
         const response = await (0, exports.googleprofiledata)(access_token);
+        ;
         userData = response;
     }
     catch (err) {
@@ -105,6 +106,9 @@ const loginWithGoogle = async (body) => {
         }
         return user;
     }
+    if (!user && !role) {
+        throw new ApiError_1.default('Please Create Account with Role', http_status_1.default.BAD_REQUEST, { role: 'role is required' });
+    }
     // Create a new user
     user = await user_model_1.default.create({
         googleId: userData?.sub,
@@ -120,72 +124,6 @@ exports.loginWithGoogle = loginWithGoogle;
 const getme = async (userId) => {
     const users = await user_model_1.default.aggregate([
         { $match: { _id: userId, isDeleted: false } },
-        {
-            $lookup: {
-                from: 'accounts',
-                localField: '_id',
-                foreignField: 'user',
-                as: 'accountDetails',
-                pipeline: [
-                    {
-                        $lookup: {
-                            from: 'users',
-                            localField: 'accountId',
-                            foreignField: '_id',
-                            as: 'userDetails',
-                            pipeline: [{ $project: { _id: 1, orgName: 1 } }],
-                        },
-                    },
-                    {
-                        $unwind: '$userDetails',
-                    },
-                    {
-                        $group: {
-                            _id: '$accountId',
-                            role: { $first: '$role' },
-                            status: { $first: '$status' },
-                            orgName: { $first: '$userDetails.orgName' },
-                            createdAt: { $first: '$createdAt' },
-                            accountType: { $first: '$accountType' }
-                        },
-                    },
-                    {
-                        $sort: { createdAt: 1 },
-                    },
-                    { $project: { _id: 1, role: 1, status: 1, orgName: 1, createdAt: 1, accountType: 1 } },
-                ],
-            },
-        },
-        {
-            $lookup: {
-                from: 'roles',
-                localField: 'roleId',
-                foreignField: '_id',
-                as: 'roleDetails',
-            },
-        },
-        { $unwind: { path: '$roleDetails', preserveNullAndEmptyArrays: true } },
-        {
-            $project: {
-                _id: 1,
-                name: 1,
-                email: 1,
-                contact: 1,
-                permissions: '$roleDetails.permissions',
-                profilePicture: 1,
-                isEmailVerified: 1,
-                status: 1,
-                role: 1,
-                createdBy: 1,
-                providers: 1,
-                adminOF: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                subAdminRole: 1,
-                orgName: 1,
-                accountDetails: 1,
-            },
-        },
     ]);
     if (!users || users.length === 0) {
         throw new ApiError_1.default('User not found', http_status_1.default.NOT_FOUND);
@@ -235,49 +173,6 @@ const getUsers = async (data) => {
     const total = await user_model_1.default.countDocuments(matchStage);
     const users = await user_model_1.default.aggregate([
         { $match: matchStage },
-        {
-            $lookup: {
-                from: 'subscriptions',
-                let: {
-                    methods: {
-                        $map: {
-                            input: '$adminOF',
-                            as: 'a',
-                            in: '$$a.method',
-                        },
-                    },
-                },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {
-                                $in: ['$_id', '$$methods'],
-                            },
-                        },
-                    },
-                    {
-                        $lookup: {
-                            from: 'plans',
-                            localField: 'planId',
-                            foreignField: '_id',
-                            as: 'plan',
-                        },
-                    },
-                    {
-                        $unwind: {
-                            path: '$plan',
-                            preserveNullAndEmptyArrays: true,
-                        },
-                    },
-                    {
-                        $project: {
-                            name: '$plan.name',
-                        },
-                    },
-                ],
-                as: 'modules',
-            },
-        },
         { $skip: (page - 1) * limit },
         { $limit: limit },
     ]);

@@ -9,7 +9,7 @@ router
   .route('/')
   .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
   .get(auth('manageUsers'), validate(userValidation.getUsers), userController.getAllUsers);
-  // .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers);
+
 
 router.route('/me').get(auth(), userController.getMe).patch(auth(), userController.updateMe);
 

@@ -21,8 +21,6 @@ mongoose_1.default.connect(config_1.default.mongoose.url).then(() => {
     (0, socket_initialize_1.initializeSocket)(server);
     logger_1.default.info('Connected to MongoDB database');
     logger_1.default.info('Server timeouts configured for long-running operations');
-    logger_1.default.info('Action Deadline Reminder Cron Job initialized');
-    logger_1.default.info('CAPA & Risk Library Reminder Cron Job initialized');
     // seedPlans();
 });
 const exitHandler = () => {
