@@ -1,0 +1,37 @@
+version: '3.8'
+
+# AWS EC2 Docker Compose override
+# Use: docker-compose -f docker-compose.yml -f docker-compose.aws.yml up
+
+services:
+  app:
+    environment:
+      # AWS Environment detection
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_EXECUTION_ENV=true
+      - EC2_INSTANCE_ID=${EC2_INSTANCE_ID}
+      
+      # Puppeteer configuration
+      - PUPPETEER_DEBUG=true
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+      - CHROME_BIN=/usr/bin/google-chrome-stable
+      - DOCKERIZED=true
+      
+      # Security settings for Chrome in Docker
+      - DISPLAY=:99
+    
+    # Add capabilities needed for Chrome
+    cap_add:
+      - SYS_ADMIN
+    
+    # Increase shared memory size (Chrome needs this)
+    shm_size: 2gb
+    
+    # Security options
+    security_opt:
+      - seccomp:unconfined
+    
+    # Optional: if you need to expose specific ports
+    # ports:
+    #   - "3000:3000"

@@ -1,0 +1,837 @@
+{
+    "info": {
+        "_postman_id": "eventplace-api-collection",
+        "name": "Eventplace API Collection",
+        "description": "Complete API collection for Eventplace application including Auth, Users, and Upload endpoints",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Register",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"name\": \"John Doe\",\n  \"contact\": \"+1234567890\",\n  \"role\": \"admin\",\n  \"orgName\": \"My Organization\",\n  \"profilePicture\": \"https://example.com/profile.jpg\",\n  \"profilePictureKey\": \"profile/user123.jpg\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Register a new user with email and password"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Login with email and password"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login with Google",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"user@example.com\",\n  \"name\": \"John Doe\",\n  \"googleId\": \"google-oauth-id-123\",\n  \"providers\": [\"google\"],\n  \"profilePicture\": \"https://lh3.googleusercontent.com/a/profile\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login-with-google",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login-with-google"
+                            ]
+                        },
+                        "description": "Login or register using Google OAuth"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/logout",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        },
+                        "description": "Logout user by invalidating refresh token"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Refresh Tokens",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/refresh-tokens",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "refresh-tokens"
+                            ]
+                        },
+                        "description": "Generate new access and refresh tokens using refresh token"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Forgot Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"user@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/forgot-password",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "forgot-password"
+                            ]
+                        },
+                        "description": "Send password reset email to user"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reset Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"password\": \"NewPassword123!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/reset-password?token={{resetToken}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "reset-password"
+                            ],
+                            "query": [
+                                {
+                                    "key": "token",
+                                    "value": "{{resetToken}}",
+                                    "description": "Password reset token from email"
+                                }
+                            ]
+                        },
+                        "description": "Reset user password using token from email"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Send Verification Email",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/send-verification-email",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "send-verification-email"
+                            ]
+                        },
+                        "description": "Send email verification link to logged-in user"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Verify Email",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/verify-email?token={{verificationToken}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "verify-email"
+                            ],
+                            "query": [
+                                {
+                                    "key": "token",
+                                    "value": "{{verificationToken}}",
+                                    "description": "Email verification token"
+                                }
+                            ]
+                        },
+                        "description": "Verify user email using token from email"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Accept Invitation",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"token\": \"invitation-token-123\",\n  \"password\": \"Password123!\",\n  \"name\": \"John Doe\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/accept-invitation",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "accept-invitation"
+                            ]
+                        },
+                        "description": "Accept user invitation and complete registration"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Authentication endpoints for user registration, login, password management, and email verification"
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Create User",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"subadmin@example.com\",\n  \"name\": \"Jane Smith\",\n  \"subAdminRole\": \"subAdmin\",\n  \"adminOF\": [\n    {\n      \"method\": \"workspace\",\n      \"workspacePermissions\": [\"read\", \"write\", \"delete\"]\n    }\n  ],\n  \"profilePicture\": \"https://example.com/profile.jpg\",\n  \"profilePictureKey\": \"profile/jane123.jpg\",\n  \"contact\": \"+1234567890\",\n  \"orgName\": \"Department Name\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        },
+                        "description": "Create a new user (requires manageUsers permission)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/users?page=1&limit=10&role=subAdmin&search=john",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Number of results per page"
+                                },
+                                {
+                                    "key": "role",
+                                    "value": "subAdmin",
+                                    "description": "Filter by role"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "john",
+                                    "description": "Search by name or email"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "name:desc",
+                                    "description": "Sort by field",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Get all users with pagination and filters (requires manageUsers permission)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Current User (Me)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/me",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                "me"
+                            ]
+                        },
+                        "description": "Get currently logged-in user's profile"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Current User (Me)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Name\",\n  \"contact\": \"+9876543210\",\n  \"profilePicture\": \"https://example.com/new-profile.jpg\",\n  \"profilePictureKey\": \"profile/updated123.jpg\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users/me",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                "me"
+                            ]
+                        },
+                        "description": "Update currently logged-in user's profile"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User by ID",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/{{userId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{userId}}"
+                            ]
+                        },
+                        "description": "Get user details by user ID (requires manageUsers permission)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update User by ID",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated User Name\",\n  \"email\": \"updated@example.com\",\n  \"contact\": \"+1122334455\",\n  \"status\": \"inactive\",\n  \"role\": \"subAdmin\",\n  \"subAdminRole\": \"standardUser\",\n  \"adminOF\": [\n    {\n      \"method\": \"workspace\",\n      \"workspacePermissions\": [\"read\"]\n    }\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/users/{{userId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{userId}}"
+                            ]
+                        },
+                        "description": "Update user details by user ID (requires manageUsers permission)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete User by ID",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/users/{{userId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{userId}}"
+                            ]
+                        },
+                        "description": "Delete user by user ID (requires manageUsers permission)"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "User management endpoints for creating, reading, updating, and deleting users"
+        },
+        {
+            "name": "Upload",
+            "item": [
+                {
+                    "name": "Multipart Upload",
+                    "item": [
+                        {
+                            "name": "Initiate Upload",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"fileName\": \"large-video.mp4\",\n  \"filetype\": \"video/mp4\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/upload/initiate-upload",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "upload",
+                                        "initiate-upload"
+                                    ]
+                                },
+                                "description": "Initiate multipart upload for large files. Returns uploadId to be used in subsequent requests."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Generate Presigned URLs",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"fileName\": \"large-video.mp4\",\n  \"uploadId\": \"{{uploadId}}\",\n  \"filetype\": \"video/mp4\",\n  \"numChunks\": 10\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/upload/generate-presigned-url",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "upload",
+                                        "generate-presigned-url"
+                                    ]
+                                },
+                                "description": "Generate presigned URLs for uploading file chunks. Returns array of URLs for each chunk (1-1000 chunks)."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Complete Upload",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"fileName\": \"large-video.mp4\",\n  \"uploadId\": \"{{uploadId}}\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/upload/complete-upload",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "upload",
+                                        "complete-upload"
+                                    ]
+                                },
+                                "description": "Complete the multipart upload after all chunks have been uploaded"
+                            },
+                            "response": []
+                        }
+                    ],
+                    "description": "Multipart upload endpoints for large files (videos, large documents)"
+                },
+                {
+                    "name": "Single File Upload",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"fileName\": \"document.pdf\",\n  \"fileContent\": \"JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFI+PgplbmRvYmoKMiAwIG9iago8PC9UeXBlL1BhZ2VzL0NvdW50IDEvS2lkc1szIDAgUl0+PgplbmRvYmoKMyAwIG9iago8PC9UeXBlL1BhZ2UvUGFyZW50IDIgMCBSL01lZGlhQm94WzAgMCA2MTIgNzkyXS9Db250ZW50cyA0IDAgUj4+CmVuZG9iago0IDAgb2JqCjw8L0ZpbHRlci9GbGF0ZURlY29kZS9MZW5ndGggNDQ+PnN0cmVhbQp4nCvkMlQwNFAwtTQ0UzA0M1MwslSoBNJGCkYKZgoGxgoWCiYKpgqmCkYAIJsJ9AplbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCA1CjAwMDAwMDAwMDAgNjU1MzUgZgowMDAwMDAwMDE1IDAwMDAwIG4KMDAwMDAwMDA2MiAwMDAwMCBuCjAwMDAwMDAxMTUgMDAwMDAgbgowMDAwMDAwMTk4IDAwMDAwIG4KdHJhaWxlcgo8PC9TaXplIDUvUm9vdCAxIDAgUj4+CnN0YXJ0eHJlZgozMTEKJSVFT0YK\",\n  \"contentType\": \"application/pdf\",\n  \"isBase64\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/upload/single-file",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "upload",
+                                "single-file"
+                            ]
+                        },
+                        "description": "Upload a single file using base64 encoded content or raw data"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Upload from File Path",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"filePath\": \"/path/to/local/file.pdf\",\n  \"fileName\": \"uploaded-document.pdf\",\n  \"contentType\": \"application/pdf\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/upload/from-path",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "upload",
+                                "from-path"
+                            ]
+                        },
+                        "description": "Upload a file from local file system path"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Upload JSON Data",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"data\": {\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"records\": [\n      {\n        \"id\": 1,\n        \"value\": \"Sample data\"\n      },\n      {\n        \"id\": 2,\n        \"value\": \"Another record\"\n      }\n    ]\n  },\n  \"fileName\": \"export-data.json\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/upload/json-data",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "upload",
+                                "json-data"
+                            ]
+                        },
+                        "description": "Upload JSON data as a file. Data can be object, array, string, number, or boolean."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Download File",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/upload/download?key=uploads/document.pdf",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "upload",
+                                "download"
+                            ],
+                            "query": [
+                                {
+                                    "key": "key",
+                                    "value": "uploads/document.pdf",
+                                    "description": "S3 object key"
+                                }
+                            ]
+                        },
+                        "description": "Download file from AWS S3 using object key"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "File upload and download endpoints supporting multipart uploads for large files and single file uploads"
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:3000/v1",
+            "type": "string"
+        },
+        {
+            "key": "accessToken",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refreshToken",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "userId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "uploadId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "resetToken",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "verificationToken",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}
