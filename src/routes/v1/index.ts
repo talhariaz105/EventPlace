@@ -1,10 +1,14 @@
-import express, { Router } from 'express';
-import authRoute from './auth.route';
-import docsRoute from './swagger.route';
-import userRoute from './user.route';
-import uploadRoute from './upload.route';
+import express, { Router } from "express";
+import authRoute from "./auth.route";
+import docsRoute from "./swagger.route";
+import userRoute from "./user.route";
+import uploadRoute from "./upload.route";
+import eventTypeRoute from "./eventType.route";
+import serviceCategoryRoute from "./serviceCategory.route";
+import subCategoryRoute from "./subCategory.route";
+import amenitiesRoute from "./amenities.route";
 
-import config from '../../config/config';
+import config from "../../config/config";
 
 const router = express.Router();
 interface IRoute {
@@ -14,27 +18,40 @@ interface IRoute {
 
 const defaultIRoute: IRoute[] = [
   {
-    path: '/auth',
+    path: "/auth",
     route: authRoute,
   },
   {
-    path: '/users',
+    path: "/users",
     route: userRoute,
   },
- 
+
   {
-    path: '/upload',
+    path: "/upload",
     route: uploadRoute,
-  }
+  },
+  {
+    path: "/event-types",
+    route: eventTypeRoute,
+  },
+  {
+    path: "/service-categories",
+    route: serviceCategoryRoute,
+  },
+  {
+    path: "/sub-categories",
+    route: subCategoryRoute,
+  },
+  {
+    path: "/amenities",
+    route: amenitiesRoute,
+  },
 ];
-
-
-
 
 const devIRoute: IRoute[] = [
   // IRoute available only in development mode
   {
-    path: '/docs',
+    path: "/docs",
     route: docsRoute,
   },
 ];
@@ -44,12 +61,9 @@ defaultIRoute.forEach((route) => {
   router.use(route.path, route.route);
 });
 
-
-
-
 /* istanbul ignore next */
 
-if (config.env === 'development') {
+if (config.env === "development") {
   devIRoute.forEach((route) => {
     router.use(route.path, route.route);
   });

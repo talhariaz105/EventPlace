@@ -3,14 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.roleRights = exports.roles = void 0;
 const allRoles = {
     admin: [
-        'getUsers',
+        "getUsers",
+        "manageUsers",
+        "EventType",
+        "serviceCategory",
+        "subCategory",
+        "Amenities"
     ],
-    vendor: [
-        'getUsers',
-    ],
-    customer: [
-        'getUsers',
-    ],
+    vendor: ["getUsers"],
+    customer: ["getUsers"],
 };
 exports.roles = Object.keys(allRoles);
 // Normalize allRoles so that each role maps to a string[]

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import httpStatus from 'http-status';
 import ApiError from '../errors/ApiError';
-// import { roleRights } from '../../config/roles';
+import { roleRights } from '../../config/roles';
 import { IUserDoc } from '../user/user.interfaces';
 
 
@@ -16,6 +16,15 @@ const verifyCallback =
       return reject(new ApiError('Please authenticate', httpStatus.UNAUTHORIZED));
     }
     req.user = user;
+    
+    if (requiredRights.length) {
+      const userRights = roleRights.get(user.role as string);
+      const hasRequiredRights = requiredRights.every((right) => userRights?.includes(right));
+      if (!hasRequiredRights) {
+        return reject(new ApiError('You do not have permission to perform this action', httpStatus.FORBIDDEN));
+      }
+    }
+    
   
 
     resolve();

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
 const http_status_1 = __importDefault(require("http-status"));
 const ApiError_1 = __importDefault(require("../errors/ApiError"));
+const roles_1 = require("../../config/roles");
 const verifyCallback = (req, resolve, reject, requiredRights) => async (err, user, info) => {
     console.log('Authentication attempt:', req.headers.authorization);
     console.log('required rights', requiredRights);
@@ -13,6 +14,13 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
         return reject(new ApiError_1.default('Please authenticate', http_status_1.default.UNAUTHORIZED));
     }
     req.user = user;
+    if (requiredRights.length) {
+        const userRights = roles_1.roleRights.get(user.role);
+        const hasRequiredRights = requiredRights.every((right) => userRights?.includes(right));
+        if (!hasRequiredRights) {
+            return reject(new ApiError_1.default('You do not have permission to perform this action', http_status_1.default.FORBIDDEN));
+        }
+    }
     resolve();
 };
 const authMiddleware = (...requiredRights) => async (req, res, next) => new Promise((resolve, reject) => {

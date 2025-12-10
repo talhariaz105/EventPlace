@@ -1,16 +1,14 @@
-
-
 const allRoles = {
   admin: [
-    'getUsers',
-    
+    "getUsers",
+    "manageUsers",
+    "EventType",
+    "serviceCategory",
+    "subCategory",
+    "Amenities"
   ],
-  vendor: [
-    'getUsers',
-  ],
-  customer: [
-    'getUsers',
-  ],
+  vendor: ["getUsers"],
+  customer: ["getUsers"],
 };
 
 export const roles: string[] = Object.keys(allRoles);
