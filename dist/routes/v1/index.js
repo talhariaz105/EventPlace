@@ -12,6 +12,7 @@ const eventType_route_1 = __importDefault(require("./eventType.route"));
 const serviceCategory_route_1 = __importDefault(require("./serviceCategory.route"));
 const subCategory_route_1 = __importDefault(require("./subCategory.route"));
 const amenities_route_1 = __importDefault(require("./amenities.route"));
+const listings_route_1 = __importDefault(require("./listings.route"));
 const config_1 = __importDefault(require("../../config/config"));
 const router = express_1.default.Router();
 const defaultIRoute = [
@@ -42,6 +43,10 @@ const defaultIRoute = [
     {
         path: "/amenities",
         route: amenities_route_1.default,
+    },
+    {
+        path: "/listings",
+        route: listings_route_1.default,
     },
 ];
 const devIRoute = [

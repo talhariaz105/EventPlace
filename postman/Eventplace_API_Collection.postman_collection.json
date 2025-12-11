@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "eventplace-api-collection-v2",
         "name": "Eventplace API Collection",
-        "description": "Complete API collection for Eventplace application including Auth, Users, Upload, EventType, ServiceCategory, SubCategory, and Amenities endpoints",
+        "description": "Complete API collection for Eventplace application including Auth, Users, Upload, EventType, ServiceCategory, SubCategory, Amenities, and Listings endpoints",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -1299,6 +1299,489 @@
             "description": "Amenities management endpoints for creating, reading, updating, and deleting amenities"
         },
         {
+            "name": "Listings",
+            "item": [
+                {
+                    "name": "Create Listing (Venue or Vendor)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"venue\",\n  \"name\": \"Grand Ballroom\",\n  \"hostingCompany\": \"Luxury Events Ltd\",\n  \"shortSummary\": \"Beautiful venue for weddings and corporate events\",\n  \"descrption\": \"A stunning ballroom with modern amenities and classic elegance\",\n  \"location\": {\n    \"address\": \"123 Main Street\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"country\": \"USA\",\n    \"zipCode\": \"10001\",\n    \"coordinates\": [-74.0060, 40.7128],\n    \"latitude\": 40.7128,\n    \"longitude\": -74.0060\n  },\n  \"media\": [\n    {\n      \"url\": \"https://example.com/image1.jpg\",\n      \"type\": \"image\",\n      \"key\": \"venue/image1.jpg\"\n    }\n  ],\n  \"serviceDays\": [\n    {\n      \"day\": \"Monday\",\n      \"startTime\": \"09:00\",\n      \"endTime\": \"22:00\",\n      \"price\": 5000\n    }\n  ],\n  \"vendorId\": \"{{userId}}\",\n  \"area\": {\n    \"value\": 5000,\n    \"unit\": \"sqft\"\n  },\n  \"maxSeatingCapacity\": 300,\n  \"maxStandingCapacity\": 500,\n  \"rooms\": 3,\n  \"cleaning\": \"include\",\n  \"catering\": \"exclude\",\n  \"outsideFoodAllowed\": true,\n  \"alcoholAllowed\": true,\n  \"inhouseBar\": false,\n  \"timeZone\": \"America/New_York\",\n  \"basePriceRange\": \"$5000-$10000\",\n  \"venueStyle\": \"modern\",\n  \"layouts\": [\"banquet\", \"theater\"]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/listings",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "listings"
+                            ]
+                        },
+                        "description": "Create a new listing. Set type to 'venue' or 'vendor' (requires manageUsers permission)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Venues",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/listings/venues?sortBy=createdAt:desc&limit=10&page=1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "listings",
+                                "venues"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "wedding",
+                                    "disabled": true,
+                                    "description": "Search across name, description, address, etc."
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "approved",
+                                    "disabled": true,
+                                    "description": "Filter by status: pending, approved, rejected"
+                                },
+                                {
+                                    "key": "VerificationStatus",
+                                    "value": "verified",
+                                    "disabled": true,
+                                    "description": "Filter by verification: pending, verified, unverified"
+                                },
+                                {
+                                    "key": "serviceTypeId",
+                                    "value": "{{eventTypeId}}",
+                                    "disabled": true,
+                                    "description": "Filter by service type ID"
+                                },
+                                {
+                                    "key": "vendorId",
+                                    "value": "{{userId}}",
+                                    "disabled": true,
+                                    "description": "Filter by vendor user ID"
+                                },
+                                {
+                                    "key": "city",
+                                    "value": "New York",
+                                    "disabled": true,
+                                    "description": "Filter by city"
+                                },
+                                {
+                                    "key": "state",
+                                    "value": "NY",
+                                    "disabled": true,
+                                    "description": "Filter by state"
+                                },
+                                {
+                                    "key": "country",
+                                    "value": "USA",
+                                    "disabled": true,
+                                    "description": "Filter by country"
+                                },
+                                {
+                                    "key": "longitude",
+                                    "value": "-74.0060",
+                                    "disabled": true,
+                                    "description": "Longitude for geospatial search (5km radius)"
+                                },
+                                {
+                                    "key": "latitude",
+                                    "value": "40.7128",
+                                    "disabled": true,
+                                    "description": "Latitude for geospatial search (5km radius)"
+                                },
+                                {
+                                    "key": "minPrice",
+                                    "value": "1000",
+                                    "disabled": true,
+                                    "description": "Minimum price filter"
+                                },
+                                {
+                                    "key": "maxPrice",
+                                    "value": "10000",
+                                    "disabled": true,
+                                    "description": "Maximum price filter"
+                                },
+                                {
+                                    "key": "amenities",
+                                    "value": "{{amenitiesId}}",
+                                    "disabled": true,
+                                    "description": "Filter by amenities IDs (can be array)"
+                                },
+                                {
+                                    "key": "venueStyles",
+                                    "value": "modern",
+                                    "disabled": true,
+                                    "description": "Filter by venue styles (can be array)"
+                                },
+                                {
+                                    "key": "capacity",
+                                    "value": "100",
+                                    "disabled": true,
+                                    "description": "Minimum capacity required"
+                                },
+                                {
+                                    "key": "layouts",
+                                    "value": "banquet",
+                                    "disabled": true,
+                                    "description": "Filter by layout types (can be array)"
+                                },
+                                {
+                                    "key": "outsideFoodAllowed",
+                                    "value": "true",
+                                    "disabled": true,
+                                    "description": "Filter by outside food allowed (true/false)"
+                                },
+                                {
+                                    "key": "alcoholAllowed",
+                                    "value": "true",
+                                    "disabled": true,
+                                    "description": "Filter by alcohol allowed (true/false)"
+                                },
+                                {
+                                    "key": "inhouseBar",
+                                    "value": "false",
+                                    "disabled": true,
+                                    "description": "Filter by inhouse bar availability (true/false)"
+                                },
+                                {
+                                    "key": "eventTypeIds",
+                                    "value": "{{eventTypeId}}",
+                                    "disabled": true,
+                                    "description": "Filter by event type IDs (can be array)"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "createdAt:desc",
+                                    "description": "Sort by field:order (e.g., name:asc, createdAt:desc)"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Number of results per page"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number"
+                                }
+                            ]
+                        },
+                        "description": "Get all venues with aggregation (amenities, subcategories, vendor data) and pagination"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Vendors",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/listings/vendors?sortBy=createdAt:desc&limit=10&page=1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "listings",
+                                "vendors"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "photographer",
+                                    "disabled": true,
+                                    "description": "Search across name, description, address, etc."
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "approved",
+                                    "disabled": true,
+                                    "description": "Filter by status: pending, approved, rejected"
+                                },
+                                {
+                                    "key": "VerificationStatus",
+                                    "value": "verified",
+                                    "disabled": true,
+                                    "description": "Filter by verification: pending, verified, unverified"
+                                },
+                                {
+                                    "key": "serviceTypeId",
+                                    "value": "{{eventTypeId}}",
+                                    "disabled": true,
+                                    "description": "Filter by service type ID"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "vendor",
+                                    "disabled": true,
+                                    "description": "Filter by type: venue or vendor"
+                                },
+                                {
+                                    "key": "vendorId",
+                                    "value": "{{userId}}",
+                                    "disabled": true,
+                                    "description": "Filter by vendor user ID"
+                                },
+                                {
+                                    "key": "city",
+                                    "value": "New York",
+                                    "disabled": true,
+                                    "description": "Filter by city"
+                                },
+                                {
+                                    "key": "state",
+                                    "value": "NY",
+                                    "disabled": true,
+                                    "description": "Filter by state"
+                                },
+                                {
+                                    "key": "country",
+                                    "value": "USA",
+                                    "disabled": true,
+                                    "description": "Filter by country"
+                                },
+                                {
+                                    "key": "longitude",
+                                    "value": "-74.0060",
+                                    "disabled": true,
+                                    "description": "Longitude for geospatial search (5km radius)"
+                                },
+                                {
+                                    "key": "latitude",
+                                    "value": "40.7128",
+                                    "disabled": true,
+                                    "description": "Latitude for geospatial search (5km radius)"
+                                },
+                                {
+                                    "key": "minPrice",
+                                    "value": "500",
+                                    "disabled": true,
+                                    "description": "Minimum price filter"
+                                },
+                                {
+                                    "key": "maxPrice",
+                                    "value": "5000",
+                                    "disabled": true,
+                                    "description": "Maximum price filter"
+                                },
+                                {
+                                    "key": "amenities",
+                                    "value": "{{amenitiesId}}",
+                                    "disabled": true,
+                                    "description": "Filter by amenities IDs (can be array)"
+                                },
+                                {
+                                    "key": "venueStyles",
+                                    "value": "modern",
+                                    "disabled": true,
+                                    "description": "Filter by venue styles (can be array)"
+                                },
+                                {
+                                    "key": "capacity",
+                                    "value": "50",
+                                    "disabled": true,
+                                    "description": "Minimum capacity required"
+                                },
+                                {
+                                    "key": "layouts",
+                                    "value": "banquet",
+                                    "disabled": true,
+                                    "description": "Filter by layout types (can be array)"
+                                },
+                                {
+                                    "key": "outsideFoodAllowed",
+                                    "value": "true",
+                                    "disabled": true,
+                                    "description": "Filter by outside food allowed (true/false)"
+                                },
+                                {
+                                    "key": "alcoholAllowed",
+                                    "value": "true",
+                                    "disabled": true,
+                                    "description": "Filter by alcohol allowed (true/false)"
+                                },
+                                {
+                                    "key": "inhouseBar",
+                                    "value": "false",
+                                    "disabled": true,
+                                    "description": "Filter by inhouse bar availability (true/false)"
+                                },
+                                {
+                                    "key": "eventTypeIds",
+                                    "value": "{{eventTypeId}}",
+                                    "disabled": true,
+                                    "description": "Filter by event type IDs (can be array)"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "createdAt:desc",
+                                    "description": "Sort by field:order (e.g., name:asc, createdAt:desc)"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Number of results per page"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number"
+                                }
+                            ]
+                        },
+                        "description": "Get all vendors with aggregation (subcategories, vendor data) and pagination"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Listing by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/listings/{{listingId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "listings",
+                                "{{listingId}}"
+                            ]
+                        },
+                        "description": "Get a single listing (venue or vendor) by ID with populated amenities, subcategories, and vendor data"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Listings by Vendor User ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/listings/vendor/{{userId}}?limit=10&page=1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "listings",
+                                "vendor",
+                                "{{userId}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "type",
+                                    "value": "venue",
+                                    "disabled": true,
+                                    "description": "Filter by type: venue or vendor"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get all listings for a specific vendor user with optional type filter and pagination"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Listing",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Grand Ballroom Updated\",\n  \"shortSummary\": \"Updated summary for the venue\",\n  \"maxSeatingCapacity\": 350,\n  \"status\": \"approved\",\n  \"VerificationStatus\": \"verified\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/listings/{{listingId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "listings",
+                                "{{listingId}}"
+                            ]
+                        },
+                        "description": "Update a listing by ID. Cannot change type after creation. (requires manageUsers permission)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Listing",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/listings/{{listingId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "listings",
+                                "{{listingId}}"
+                            ]
+                        },
+                        "description": "Delete a listing by ID (soft delete - sets isDeleted to true). (requires manageUsers permission)"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Listings management endpoints for creating, reading, updating, and deleting venue and vendor listings with aggregation and pagination support"
+        },
+        {
             "name": "Upload",
             "item": [
                 {
@@ -1563,6 +2046,11 @@
         },
         {
             "key": "amenitiesId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "listingId",
             "value": "",
             "type": "string"
         },

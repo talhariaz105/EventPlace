@@ -7,6 +7,7 @@ import eventTypeRoute from "./eventType.route";
 import serviceCategoryRoute from "./serviceCategory.route";
 import subCategoryRoute from "./subCategory.route";
 import amenitiesRoute from "./amenities.route";
+import listingsRoute from "./listings.route";
 
 import config from "../../config/config";
 
@@ -45,6 +46,10 @@ const defaultIRoute: IRoute[] = [
   {
     path: "/amenities",
     route: amenitiesRoute,
+  },
+  {
+    path: "/listings",
+    route: listingsRoute,
   },
 ];
 
