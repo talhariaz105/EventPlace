@@ -5,9 +5,10 @@ const allRoles = {
     "EventType",
     "serviceCategory",
     "subCategory",
-    "Amenities"
+    "Amenities",
+    "Listings",
   ],
-  vendor: ["getUsers"],
+  vendor: ["getUsers", "Listings"],
   customer: ["getUsers"],
 };
 

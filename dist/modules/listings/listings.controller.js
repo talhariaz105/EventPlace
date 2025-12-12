@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteListing = exports.updateListing = exports.getListingsByVendorId = exports.getListingById = exports.getVendors = exports.getVenues = exports.createListing = void 0;
+exports.getMyListings = exports.getAdminListings = exports.deleteListing = exports.updateListing = exports.getListingsByVendorId = exports.getListingById = exports.getVendors = exports.getVenues = exports.createListing = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
@@ -32,7 +32,10 @@ const listingsService = __importStar(require("./listings.service"));
  * Create a listing (venue or vendor)
  */
 exports.createListing = (0, catchAsync_1.default)(async (req, res) => {
-    const listing = await listingsService.createListing(req.body);
+    const listing = await listingsService.createListing({
+        vendorId: req.user._id,
+        ...req.body,
+    });
     res.status(http_status_1.default.CREATED).send(listing);
 });
 /**
@@ -87,4 +90,25 @@ exports.deleteListing = (0, catchAsync_1.default)(async (req, res) => {
         await listingsService.deleteListingById(new mongoose_1.default.Types.ObjectId(req.params["listingsId"]));
         res.status(http_status_1.default.NO_CONTENT).send();
     }
+});
+/**
+ * Get all listings for admin
+ */
+exports.getAdminListings = (0, catchAsync_1.default)(async (req, res) => {
+    const options = (0, pick_1.default)(req.query, ["limit", "page"]);
+    const result = await listingsService.getAdminListings(options);
+    res.send(result);
+});
+/**
+ * Get my listings for logged-in vendor user
+ */
+exports.getMyListings = (0, catchAsync_1.default)(async (req, res) => {
+    const vendorId = req.user?.id; // Assuming user ID is available from auth middleware
+    if (!vendorId) {
+        res.status(http_status_1.default.UNAUTHORIZED).send({ message: "Unauthorized" });
+        return;
+    }
+    const options = (0, pick_1.default)(req.query, ["limit", "page", "type"]);
+    const result = await listingsService.getMyListings(new mongoose_1.default.Types.ObjectId(vendorId), options);
+    res.send(result);
 });

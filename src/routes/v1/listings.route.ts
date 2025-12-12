@@ -9,7 +9,7 @@ const router: Router = express.Router();
 router
   .route("/")
   .post(
-    auth("manageUsers"),
+    auth("Listings"),
     validate(listingsValidation.createListings),
     listingsController.createListing
   );
@@ -24,9 +24,28 @@ router
   .route("/vendors")
   .get(validate(listingsValidation.getListings), listingsController.getVendors);
 
+// Admin - get all listings
+router
+  .route("/admin")
+  .get(
+    auth("manageUsers"),
+    validate(listingsValidation.getAdminOrMyListings),
+    listingsController.getAdminListings
+  );
+
+// Vendor - get my listings
+router
+  .route("/my-listings")
+  .get(
+    auth(),
+    validate(listingsValidation.getAdminOrMyListings),
+    listingsController.getMyListings
+  );
+
 // Get listings by vendor user ID
 router
   .route("/vendor/:vendorId")
+
   .get(
     validate(listingsValidation.getListingsByVendorId),
     listingsController.getListingsByVendorId
@@ -40,12 +59,12 @@ router
     listingsController.getListingById
   )
   .patch(
-    auth("manageUsers"),
+    auth("Listings"),
     validate(listingsValidation.updateListings),
     listingsController.updateListing
   )
   .delete(
-    auth("manageUsers"),
+    auth("Listings"),
     validate(listingsValidation.deleteListings),
     listingsController.deleteListing
   );

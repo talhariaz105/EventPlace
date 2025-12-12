@@ -9,7 +9,10 @@ import * as listingsService from "./listings.service";
  * Create a listing (venue or vendor)
  */
 export const createListing = catchAsync(async (req: Request, res: Response) => {
-  const listing = await listingsService.createListing(req.body);
+  const listing = await listingsService.createListing({
+    vendorId: req.user._id,
+    ...req.body,
+  });
   res.status(httpStatus.CREATED).send(listing);
 });
 
@@ -17,7 +20,6 @@ export const createListing = catchAsync(async (req: Request, res: Response) => {
  * Get all venues with aggregation and pagination
  */
 export const getVenues = catchAsync(async (req: Request, res: Response) => {
-
   const options = pick(req.query, ["sortBy", "limit", "page"]);
   const result = await listingsService.queryVenuesandVendor(req.query, options);
   res.send(result);
@@ -27,7 +29,6 @@ export const getVenues = catchAsync(async (req: Request, res: Response) => {
  * Get all vendors with aggregation and pagination
  */
 export const getVendors = catchAsync(async (req: Request, res: Response) => {
-
   const options = pick(req.query, ["sortBy", "limit", "page"]);
   const result = await listingsService.queryVenuesandVendor(req.query, options);
   res.send(result);
@@ -86,4 +87,32 @@ export const deleteListing = catchAsync(async (req: Request, res: Response) => {
     );
     res.status(httpStatus.NO_CONTENT).send();
   }
+});
+
+/**
+ * Get all listings for admin
+ */
+export const getAdminListings = catchAsync(
+  async (req: Request, res: Response) => {
+    const options = pick(req.query, ["limit", "page", "type"]);
+    const result = await listingsService.getAdminListings(options);
+    res.send(result);
+  }
+);
+
+/**
+ * Get my listings for logged-in vendor user
+ */
+export const getMyListings = catchAsync(async (req: Request, res: Response) => {
+  const vendorId = req.user?.id; // Assuming user ID is available from auth middleware
+  if (!vendorId) {
+    res.status(httpStatus.UNAUTHORIZED).send({ message: "Unauthorized" });
+    return;
+  }
+  const options = pick(req.query, ["limit", "page", "type"]);
+  const result = await listingsService.getMyListings(
+    new mongoose.Types.ObjectId(vendorId),
+    options
+  );
+  res.send(result);
 });

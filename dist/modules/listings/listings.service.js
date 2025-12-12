@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteListingById = exports.updateListingById = exports.getListingsByVendorId = exports.getListingById = exports.queryVenuesandVendor = exports.createListing = void 0;
+exports.getMyListings = exports.getAdminListings = exports.deleteListingById = exports.updateListingById = exports.getListingsByVendorId = exports.getListingById = exports.queryVenuesandVendor = exports.createListing = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const listings_modal_1 = __importDefault(require("./listings.modal"));
 const listings_venue_1 = __importDefault(require("./listings.venue"));
@@ -16,14 +16,14 @@ const listing_filter_1 = require("./listing.filter");
  * @returns {Promise<IListingsModal>}
  */
 const createListing = async (listingBody) => {
-    const { type } = listingBody;
-    if (!type) {
+    const { listingtype } = listingBody;
+    if (!listingtype) {
         throw new ApiError_1.default("Listing type (venue or vendor) is required", http_status_1.default.BAD_REQUEST);
     }
-    if (type === "venue") {
+    if (listingtype === "venue") {
         return listings_venue_1.default.create(listingBody);
     }
-    else if (type === "vendor") {
+    else if (listingtype === "vendor") {
         return listing_vendor_1.default.create(listingBody);
     }
     else {
@@ -48,8 +48,9 @@ const queryVenuesandVendor = async (filter, options) => {
     const sortOrder = sortParts[1] === "desc" ? -1 : 1;
     // Build match stage
     const matchStage = {
-        type: "venue",
+        listingtype: "venue",
         isDeleted: false,
+        ispublished: true,
         ...(0, listing_filter_1.listingFilter)(filter),
     };
     const pipeline = [
@@ -72,8 +73,8 @@ const queryVenuesandVendor = async (filter, options) => {
         {
             $unwind: {
                 path: "$serviceTypeData",
-                preserveNullAndEmptyArrays: true
-            }
+                preserveNullAndEmptyArrays: true,
+            },
         },
         {
             $lookup: {
@@ -165,7 +166,7 @@ const updateListingById = async (listingId, updateBody) => {
     if (!listing) {
         throw new ApiError_1.default("Listing not found", http_status_1.default.NOT_FOUND);
     }
-    const model = listing.type === "venue" ? listings_venue_1.default : listing_vendor_1.default;
+    const model = listing.listingtype === "venue" ? listings_venue_1.default : listing_vendor_1.default;
     const updatedListing = await model.findOneAndUpdate({ _id: listingId }, updateBody, { new: true, runValidators: true });
     return updatedListing;
 };
@@ -185,3 +186,76 @@ const deleteListingById = async (listingId) => {
     return listing;
 };
 exports.deleteListingById = deleteListingById;
+/**
+ * Get all listings for admin with pagination
+ * @param {Object} options - Query options
+ * @returns {Promise<any>}
+ */
+const getAdminListings = async (options) => {
+    const page = parseInt(options["page"]) || 1;
+    const limit = parseInt(options["limit"]) || 10;
+    const skip = (page - 1) * limit;
+    const filter = { isDeleted: false };
+    if (options["type"]) {
+        filter.type = options["type"];
+    }
+    const listings = await listings_modal_1.default.find(filter)
+        .populate("vendorId", "name email profilePicture")
+        .populate("amenties")
+        .populate("eventtypes")
+        .populate("subcategories")
+        .populate("serviceTypeId")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+    const totalResults = await listings_modal_1.default.countDocuments({
+        isDeleted: false,
+    });
+    const totalPages = Math.ceil(totalResults / limit);
+    return {
+        results: listings,
+        page,
+        limit,
+        totalPages,
+        totalResults,
+    };
+};
+exports.getAdminListings = getAdminListings;
+/**
+ * Get listings for logged-in vendor user with pagination
+ * @param {mongoose.Types.ObjectId} vendorId
+ * @param {Object} options - Query options
+ * @returns {Promise<any>}
+ */
+const getMyListings = async (vendorId, options) => {
+    const page = parseInt(options["page"]) || 1;
+    const limit = parseInt(options["limit"]) || 10;
+    const skip = (page - 1) * limit;
+    const filter = { vendorId, isDeleted: false };
+    if (options["type"]) {
+        filter.type = options["type"];
+    }
+    const listings = await listings_modal_1.default.find(filter)
+        .populate("amenties")
+        .populate("eventtypes")
+        .populate("subcategories")
+        .populate("serviceTypeId")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+    const totalResults = await listings_modal_1.default.countDocuments({
+        vendorId,
+        isDeleted: false,
+    });
+    const totalPages = Math.ceil(totalResults / limit);
+    return {
+        results: listings,
+        page,
+        limit,
+        totalPages,
+        totalResults,
+    };
+};
+exports.getMyListings = getMyListings;

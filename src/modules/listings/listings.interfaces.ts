@@ -1,7 +1,7 @@
 import { Document, ObjectId } from "mongoose";
 
 export interface IListingsModal extends Document {
-  type: "venue" | "vendor";
+  listingtype: "venue" | "vendor";
   name: string;
   hostingCompany: string;
   shortSummary: string;
@@ -74,7 +74,7 @@ export interface IListingsModal extends Document {
       }
     ];
   };
-  basePriceRange: string;
+  basePriceRange: number;
   timeZone: string;
   packeges?: [
     {
@@ -119,4 +119,5 @@ export interface IListingsModal extends Document {
   };
   amenties?: ObjectId[] | string[];
   eventTypes?: ObjectId[] | string[];
+  priceUnit?: "fixed" | "hourly" | "daily";
 }

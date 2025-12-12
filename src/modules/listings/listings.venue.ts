@@ -11,30 +11,30 @@ const venueSchema = new mongoose.Schema({
   amenties: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Amenty",
+      ref: "Amenities",
     },
   ],
   cleaning: {
     type: String,
     enum: ["include", "exclude"],
-    required: true,
+   
   },
   catering: {
     type: String,
     enum: ["include", "exclude"],
-    required: true,
+  
   },
   outsideFoodAllowed: {
     type: Boolean,
-    required: true,
+
   },
   alcoholAllowed: {
     type: Boolean,
-    required: true,
+
   },
   inhouseBar: {
     type: Boolean,
-    required: true,
+  
   },
   venueStyle: {
     type: String,
@@ -43,48 +43,41 @@ const venueSchema = new mongoose.Schema({
   layouts: [
     {
       type: String,
-      enyum: [
-        "banquet",
-        "theater",
-        "classroom",
-        "u-shape",
-        "cocktail",
-        "other",
-      ],
+      enum: ["banquet","theater","classroom","u-shape","cocktail"],
     },
   ],
   area: {
     value: {
       type: Number,
-      required: true,
+   
     },
     unit: {
       type: String,
-      required: true,
+  
     },
   },
   Venuerolesandterms: {
     noise: {
       type: Boolean,
-      required: true,
+
     },
     curfew: {
       type: Boolean,
-      required: true,
+
     },
     cancelationPolicy: {
       type: Boolean,
-      required: true,
+  
     },
     cancelationFiles: [
       {
         url: {
           type: String,
-          required: true,
+    
         },
         type: {
           type: String,
-          required: true,
+  
         },
         key: {
           type: String,
@@ -93,17 +86,17 @@ const venueSchema = new mongoose.Schema({
     ],
     refundPolicy: {
       type: Boolean,
-      required: true,
+     
     },
     refundFiles: [
       {
         url: {
           type: String,
-          required: true,
+
         },
         type: {
           type: String,
-          required: true,
+
         },
         key: {
           type: String,
@@ -113,6 +106,6 @@ const venueSchema = new mongoose.Schema({
   },
 });
 
-const VenueListing = ServiceListing.discriminator("VenueListing", venueSchema);
+const VenueListing = ServiceListing.discriminator("venue", venueSchema);
 
 export default VenueListing;

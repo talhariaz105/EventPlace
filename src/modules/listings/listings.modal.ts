@@ -2,7 +2,7 @@ import { IListingsModal } from "./listings.interfaces";
 import mongoose from "mongoose";
 const listingsSchema = new mongoose.Schema<IListingsModal>(
   {
-    type: {
+    listingtype: {
       type: String,
       enum: ["venue", "vendor"],
     },
@@ -21,7 +21,6 @@ const listingsSchema = new mongoose.Schema<IListingsModal>(
     location: {
       address: {
         type: String,
-        required: true,
       },
       city: {
         type: String,
@@ -31,7 +30,6 @@ const listingsSchema = new mongoose.Schema<IListingsModal>(
       },
       zipCode: {
         type: String,
-        required: true,
       },
       country: {
         type: String,
@@ -57,11 +55,9 @@ const listingsSchema = new mongoose.Schema<IListingsModal>(
       {
         url: {
           type: String,
-          required: true,
         },
         type: {
           type: String,
-          required: true,
         },
         key: {
           type: String,
@@ -76,12 +72,12 @@ const listingsSchema = new mongoose.Schema<IListingsModal>(
     },
     vendorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Vendor",
+      ref: "User",
       required: true,
     },
 
     basePriceRange: {
-      type: String,
+      type: Number,
     },
     timeZone: {
       type: String,
@@ -90,15 +86,12 @@ const listingsSchema = new mongoose.Schema<IListingsModal>(
       {
         name: {
           type: String,
-          required: true,
         },
         description: {
           type: String,
-          required: true,
         },
         price: {
           type: Number,
-          required: true,
         },
         thumbnail: {
           type: String,
@@ -109,7 +102,7 @@ const listingsSchema = new mongoose.Schema<IListingsModal>(
         amenties: [
           {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Amenty",
+            ref: "Amenities",
           },
         ],
         priceUnit: {
@@ -118,23 +111,23 @@ const listingsSchema = new mongoose.Schema<IListingsModal>(
         },
       },
     ],
+    priceUnit: {
+      type: String,
+      enum: ["fixed", "hourly", "daily"],
+    },
     serviceDays: [
       {
         day: {
           type: String,
-          required: true,
         },
         startTime: {
           type: String,
-          required: true,
         },
         endTime: {
           type: String,
-          required: true,
         },
         price: {
           type: Number,
-          required: true,
         },
       },
     ],
@@ -165,7 +158,7 @@ const listingsSchema = new mongoose.Schema<IListingsModal>(
   },
   {
     timestamps: true,
-    discriminatorKey: "type",
+    discriminatorKey: "listingtype",
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
   }

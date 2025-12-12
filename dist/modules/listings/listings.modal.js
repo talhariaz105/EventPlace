@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const listingsSchema = new mongoose_1.default.Schema({
-    type: {
+    listingtype: {
         type: String,
         enum: ["venue", "vendor"],
     },
@@ -24,7 +24,6 @@ const listingsSchema = new mongoose_1.default.Schema({
     location: {
         address: {
             type: String,
-            required: true,
         },
         city: {
             type: String,
@@ -34,7 +33,6 @@ const listingsSchema = new mongoose_1.default.Schema({
         },
         zipCode: {
             type: String,
-            required: true,
         },
         country: {
             type: String,
@@ -60,11 +58,9 @@ const listingsSchema = new mongoose_1.default.Schema({
         {
             url: {
                 type: String,
-                required: true,
             },
             type: {
                 type: String,
-                required: true,
             },
             key: {
                 type: String,
@@ -79,11 +75,11 @@ const listingsSchema = new mongoose_1.default.Schema({
     },
     vendorId: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "Vendor",
+        ref: "User",
         required: true,
     },
     basePriceRange: {
-        type: String,
+        type: Number,
     },
     timeZone: {
         type: String,
@@ -92,15 +88,12 @@ const listingsSchema = new mongoose_1.default.Schema({
         {
             name: {
                 type: String,
-                required: true,
             },
             description: {
                 type: String,
-                required: true,
             },
             price: {
                 type: Number,
-                required: true,
             },
             thumbnail: {
                 type: String,
@@ -111,7 +104,7 @@ const listingsSchema = new mongoose_1.default.Schema({
             amenties: [
                 {
                     type: mongoose_1.default.Schema.Types.ObjectId,
-                    ref: "Amenty",
+                    ref: "Amenities",
                 },
             ],
             priceUnit: {
@@ -120,23 +113,23 @@ const listingsSchema = new mongoose_1.default.Schema({
             },
         },
     ],
+    priceUnit: {
+        type: String,
+        enum: ["fixed", "hourly", "daily"],
+    },
     serviceDays: [
         {
             day: {
                 type: String,
-                required: true,
             },
             startTime: {
                 type: String,
-                required: true,
             },
             endTime: {
                 type: String,
-                required: true,
             },
             price: {
                 type: Number,
-                required: true,
             },
         },
     ],
@@ -166,7 +159,7 @@ const listingsSchema = new mongoose_1.default.Schema({
     ],
 }, {
     timestamps: true,
-    discriminatorKey: "type",
+    discriminatorKey: "listingtype",
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
 });

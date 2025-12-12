@@ -25,8 +25,7 @@ const createListingsBody = {
         type: Joi.string().trim(),
       })
     )
-    .min(1)
-    .required(),
+    .min(1),
   serviceDays: Joi.array()
     .items(
       Joi.object().keys({
@@ -72,7 +71,7 @@ const createListingsBody = {
   rooms: Joi.number().optional(),
   amenties: Joi.array().items(Joi.string().custom(objectId)).optional(),
   timeZone: Joi.string(),
-  basePriceRange: Joi.string(),
+  basePriceRange: Joi.number().optional(),
   packeges: Joi.array()
     .items(
       Joi.object().keys({
@@ -103,7 +102,7 @@ const createListingsBody = {
   venueStyle: Joi.string().optional(),
   layouts: Joi.array().items(Joi.string()).optional(),
   subcategories: Joi.array().items(Joi.string().custom(objectId)).optional(),
-  type: Joi.string().valid("venue", "vendor"),
+  listingtype: Joi.string().valid("venue", "vendor"),
   ispublished: Joi.boolean().optional().default(false),
   Vendorrolesandterms: Joi.object().keys({
     travelfee: Joi.boolean().required(),
@@ -125,15 +124,15 @@ const createListingsBody = {
       })
     ),
     eventTypes: Joi.array().items(Joi.string().custom(objectId)).optional(),
+    priceUnit: Joi.string().valid("fixed", "hourly", "daily").optional(),
   }),
 };
 
 export const createListings = {
   body: Joi.object()
     .keys(createListingsBody)
-    .fork(
-      ["type", "name", "hostingCompany", "shortSummary", "location"],
-      (schema) => schema.required()
+    .fork(["listingtype", "name", "hostingCompany", "location"], (schema) =>
+      schema.required()
     ),
 };
 
@@ -206,6 +205,13 @@ export const getListingsByVendorId = {
   }),
   query: Joi.object().keys({
     type: Joi.string().valid("venue", "vendor"),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+  }),
+};
+
+export const getAdminOrMyListings = {
+  query: Joi.object().keys({
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
   }),

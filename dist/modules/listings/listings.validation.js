@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getListingsByVendorId = exports.deleteListings = exports.updateListings = exports.getListingsById = exports.getListings = exports.createListings = void 0;
+exports.getAdminOrMyListings = exports.getListingsByVendorId = exports.deleteListings = exports.updateListings = exports.getListingsById = exports.getListings = exports.createListings = void 0;
 const joi_1 = __importDefault(require("joi"));
 const custom_validation_1 = require("../validate/custom.validation");
 const createListingsBody = {
@@ -28,8 +28,7 @@ const createListingsBody = {
         key: joi_1.default.string().optional(),
         type: joi_1.default.string().trim(),
     }))
-        .min(1)
-        .required(),
+        .min(1),
     serviceDays: joi_1.default.array()
         .items(joi_1.default.object().keys({
         day: joi_1.default.string().trim(),
@@ -69,7 +68,7 @@ const createListingsBody = {
     rooms: joi_1.default.number().optional(),
     amenties: joi_1.default.array().items(joi_1.default.string().custom(custom_validation_1.objectId)).optional(),
     timeZone: joi_1.default.string(),
-    basePriceRange: joi_1.default.string(),
+    basePriceRange: joi_1.default.number().optional(),
     packeges: joi_1.default.array()
         .items(joi_1.default.object().keys({
         name: joi_1.default.string().required(),
@@ -98,7 +97,7 @@ const createListingsBody = {
     venueStyle: joi_1.default.string().optional(),
     layouts: joi_1.default.array().items(joi_1.default.string()).optional(),
     subcategories: joi_1.default.array().items(joi_1.default.string().custom(custom_validation_1.objectId)).optional(),
-    type: joi_1.default.string().valid("venue", "vendor"),
+    listingtype: joi_1.default.string().valid("venue", "vendor"),
     ispublished: joi_1.default.boolean().optional().default(false),
     Vendorrolesandterms: joi_1.default.object().keys({
         travelfee: joi_1.default.boolean().required(),
@@ -116,12 +115,13 @@ const createListingsBody = {
             key: joi_1.default.string().optional(),
         })),
         eventTypes: joi_1.default.array().items(joi_1.default.string().custom(custom_validation_1.objectId)).optional(),
+        priceUnit: joi_1.default.string().valid("fixed", "hourly", "daily").optional(),
     }),
 };
 exports.createListings = {
     body: joi_1.default.object()
         .keys(createListingsBody)
-        .fork(["type", "name", "hostingCompany", "shortSummary", "location"], (schema) => schema.required()),
+        .fork(["listingtype", "name", "hostingCompany", "location"], (schema) => schema.required()),
 };
 exports.getListings = {
     query: joi_1.default.object().keys({
@@ -176,6 +176,12 @@ exports.getListingsByVendorId = {
     }),
     query: joi_1.default.object().keys({
         type: joi_1.default.string().valid("venue", "vendor"),
+        limit: joi_1.default.number().integer(),
+        page: joi_1.default.number().integer(),
+    }),
+};
+exports.getAdminOrMyListings = {
+    query: joi_1.default.object().keys({
         limit: joi_1.default.number().integer(),
         page: joi_1.default.number().integer(),
     }),

@@ -15,18 +15,18 @@ import { listingFilter } from "./listing.filter";
 export const createListing = async (
   listingBody: Partial<IListingsModal>
 ): Promise<any> => {
-  const { type } = listingBody;
+  const { listingtype } = listingBody;
 
-  if (!type) {
+  if (!listingtype) {
     throw new ApiError(
       "Listing type (venue or vendor) is required",
       httpStatus.BAD_REQUEST
     );
   }
 
-  if (type === "venue") {
+  if (listingtype === "venue") {
     return VenueListing.create(listingBody);
-  } else if (type === "vendor") {
+  } else if (listingtype === "vendor") {
     return VendorListing.create(listingBody);
   } else {
     throw new ApiError(
@@ -58,8 +58,9 @@ export const queryVenuesandVendor = async (
 
   // Build match stage
   const matchStage: mongoose.FilterQuery<IListingsModal> = {
-    type: "venue",
+    listingtype: "venue",
     isDeleted: false,
+    ispublished: true,
     ...listingFilter(filter),
   };
 
@@ -81,10 +82,10 @@ export const queryVenuesandVendor = async (
       },
     },
     {
-        $unwind: {  
-            path: "$serviceTypeData",
-            preserveNullAndEmptyArrays: true
-        }
+      $unwind: {
+        path: "$serviceTypeData",
+        preserveNullAndEmptyArrays: true,
+      },
     },
     {
       $lookup: {
@@ -94,7 +95,7 @@ export const queryVenuesandVendor = async (
         as: "eventTypesData",
       },
     },
-    
+
     {
       $lookup: {
         from: "users",
@@ -188,24 +189,24 @@ export const getListingsByVendorId = async (
  * @returns {Promise<any>}
  */
 export const updateListingById = async (
-    listingId: mongoose.Types.ObjectId,
-    updateBody: Partial<IListingsModal>
+  listingId: mongoose.Types.ObjectId,
+  updateBody: Partial<IListingsModal>
 ): Promise<any> => {
-    const listing = await ServiceListing.findById(listingId);
+  const listing = await ServiceListing.findById(listingId);
 
-    if (!listing) {
-        throw new ApiError("Listing not found", httpStatus.NOT_FOUND);
-    }
+  if (!listing) {
+    throw new ApiError("Listing not found", httpStatus.NOT_FOUND);
+  }
 
-    const model = listing.type === "venue" ? VenueListing : VendorListing;
+  const model = listing.listingtype === "venue" ? VenueListing : VendorListing;
 
-    const updatedListing = await model.findOneAndUpdate(
-        { _id: listingId },
-        updateBody,
-        { new: true, runValidators: true }
-    );
+  const updatedListing = await model.findOneAndUpdate(
+    { _id: listingId },
+    updateBody,
+    { new: true, runValidators: true }
+  );
 
-    return updatedListing;
+  return updatedListing;
 };
 
 /**
@@ -226,4 +227,88 @@ export const deleteListingById = async (
   await listing.save();
 
   return listing;
+};
+
+/**
+ * Get all listings for admin with pagination
+ * @param {Object} options - Query options
+ * @returns {Promise<any>}
+ */
+export const getAdminListings = async (
+  options: Record<string, any>
+): Promise<any> => {
+  const page = parseInt(options["page"]) || 1;
+  const limit = parseInt(options["limit"]) || 10;
+  const skip = (page - 1) * limit;
+  const filter: any = {isDeleted: false };
+  if (options["type"]) {
+    filter.type = options["type"];
+  }
+
+  const listings = await ServiceListing.find(filter)
+    .populate("vendorId", "name email profilePicture")
+    .populate("amenties")
+    .populate("eventtypes")
+    .populate("subcategories")
+    .populate("serviceTypeId")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  const totalResults = await ServiceListing.countDocuments({
+    isDeleted: false,
+  });
+  const totalPages = Math.ceil(totalResults / limit);
+
+  return {
+    results: listings,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  };
+};
+
+/**
+ * Get listings for logged-in vendor user with pagination
+ * @param {mongoose.Types.ObjectId} vendorId
+ * @param {Object} options - Query options
+ * @returns {Promise<any>}
+ */
+export const getMyListings = async (
+  vendorId: mongoose.Types.ObjectId,
+  options: Record<string, any>
+): Promise<any> => {
+  const page = parseInt(options["page"]) || 1;
+  const limit = parseInt(options["limit"]) || 10;
+  const skip = (page - 1) * limit;
+  const filter: any = { vendorId, isDeleted: false };
+  if (options["type"]) {
+    filter.type = options["type"];
+  }
+
+  const listings = await ServiceListing.find(filter)
+    .populate("amenties")
+    .populate("eventtypes")
+    .populate("subcategories")
+    .populate("serviceTypeId")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  const totalResults = await ServiceListing.countDocuments({
+    vendorId,
+    isDeleted: false,
+  });
+  const totalPages = Math.ceil(totalResults / limit);
+
+  return {
+    results: listings,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  };
 };

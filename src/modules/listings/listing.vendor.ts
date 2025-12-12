@@ -9,68 +9,60 @@ const vendorSchema = new mongoose.Schema({
   subcategories: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ServiceSubCategory",
+      ref: "SubCategory",
     },
   ],
   foundedYear: {
-    type: Number,
+    type: Number
   },
   teamSize: {
-    type: Number,
+    type: Number
   },
   website: {
-    type: String,
+    type: String
   },
   instagram: {
-    type: String,
+    type: String
   },
   phone: {
-    type: String,
+    type: String
   },
   email: {
-    type: String,
+    type: String
   },
   Vendorrolesandterms: {
     travelfee: {
-      type: Boolean,
-      required: true,
+      type: Boolean
     },
     accommodation: {
-      type: Boolean,
-      required: true,
+      type: Boolean
     },
     cancelationPolicy: {
-      type: Boolean,
-      required: true,
+      type: Boolean
     },
     cancelationFiles: [
       {
         url: {
-          type: String,
-          required: true,
+          type: String
         },
         type: {
-          type: String,
-          required: true,
+          type: String
         },
         key: {
-          type: String,
+          type: String
         },
       },
     ],
     refundPolicy: {
       type: Boolean,
-      required: true,
     },
     refundFiles: [
       {
         url: {
           type: String,
-          required: true,
         },
         type: {
           type: String,
-          required: true,
         },
         key: {
           type: String,
@@ -81,7 +73,7 @@ const vendorSchema = new mongoose.Schema({
 });
 
 const VendorListing = ServiceListing.discriminator(
-  "VendorListing",
+  "vendor",
   vendorSchema
 );
 

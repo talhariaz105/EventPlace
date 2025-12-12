@@ -15,11 +15,11 @@ const listingFilter = (filter) => {
             { hostingCompany: regex },
             { "vendorData.name": regex },
             { shortSummary: regex },
-            { "location.address": { $regex: regex } },
-            { "location.city": { $regex: regex } },
-            { "location.state": { $regex: regex } },
-            { "location.country": { $regex: regex } },
-            { "location.zipCode": { $regex: regex } },
+            { "location.address": regex },
+            { "location.city": regex },
+            { "location.state": regex },
+            { "location.country": regex },
+            { "location.zipCode": regex },
             { "packeges.name": regex },
             { "packeges.description": regex },
         ];
@@ -33,8 +33,8 @@ const listingFilter = (filter) => {
     if (filter["VerificationStatus"]) {
         query["VerificationStatus"] = filter["VerificationStatus"];
     }
-    if (filter["type"]) {
-        query["type"] = filter["type"];
+    if (filter["listingtype"]) {
+        query["listingtype"] = filter["listingtype"];
     }
     if (filter["vendorId"]) {
         query["vendorId"] = new mongoose_1.default.Types.ObjectId(filter["vendorId"]);
@@ -60,7 +60,7 @@ const listingFilter = (filter) => {
     if (minPrice && maxPrice) {
         query["basePriceRange"] = {
             $lte: maxPrice,
-            $gte: minPrice
+            $gte: minPrice,
         };
     }
     // Geospatial filter
@@ -84,7 +84,7 @@ const listingFilter = (filter) => {
             $all: amenities.map((id) => new mongoose_1.default.Types.ObjectId(id)),
         };
     }
-    if (filter['venueStyles']) {
+    if (filter["venueStyles"]) {
         const venueStyles = Array.isArray(filter["venueStyles"])
             ? filter["venueStyles"]
             : [filter["venueStyles"]];
@@ -92,10 +92,10 @@ const listingFilter = (filter) => {
             $in: venueStyles.map((id) => new mongoose_1.default.Types.ObjectId(id)),
         };
     }
-    if (filter['capacity']) {
-        query["capacity"] = { $gte: parseInt(filter['capacity']) };
+    if (filter["capacity"]) {
+        query["capacity"] = { $gte: parseInt(filter["capacity"]) };
     }
-    if (filter['layouts']) {
+    if (filter["layouts"]) {
         const layouts = Array.isArray(filter["layouts"])
             ? filter["layouts"]
             : [filter["layouts"]];
@@ -103,14 +103,14 @@ const listingFilter = (filter) => {
             $all: layouts,
         };
     }
-    if (filter['outsideFoodAllowed'] !== undefined) {
-        query["outsideFoodAllowed"] = filter['outsideFoodAllowed'] === 'true';
+    if (filter["outsideFoodAllowed"] !== undefined) {
+        query["outsideFoodAllowed"] = filter["outsideFoodAllowed"] === "true";
     }
-    if (filter['alcoholAllowed'] !== undefined) {
-        query["alcoholAllowed"] = filter['alcoholAllowed'] === 'true';
+    if (filter["alcoholAllowed"] !== undefined) {
+        query["alcoholAllowed"] = filter["alcoholAllowed"] === "true";
     }
-    if (filter['inhouseBar'] !== undefined) {
-        query["inhouseBar"] = filter['inhouseBar'] === 'true';
+    if (filter["inhouseBar"] !== undefined) {
+        query["inhouseBar"] = filter["inhouseBar"] === "true";
     }
     return query;
 };

@@ -1777,6 +1777,172 @@
                         "description": "Delete a listing by ID (soft delete - sets isDeleted to true). (requires manageUsers permission)"
                     },
                     "response": []
+                },
+                {
+                    "name": "Get Admin Listings",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/listings/admin?limit=10&page=1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "listings",
+                                "admin"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Number of results per page (default: 10)"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number (default: 1)"
+                                }
+                            ]
+                        },
+                        "description": "Get all listings for admin users (requires manageUsers permission). Returns all listings (venue and vendor) with populated amenities, event types, subcategories, and service type. Response format: { results: [...], page, limit, totalPages, totalResults }"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/listings/admin?limit=10&page=1",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "listings",
+                                        "admin"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "cookie": [],
+                            "body": "{\n  \"results\": [\n    {\n      \"_id\": \"507f1f77bcf86cd799439011\",\n      \"name\": \"Grand Ballroom\",\n      \"listingtype\": \"venue\",\n      \"status\": \"approved\",\n      \"VerificationStatus\": \"verified\",\n      \"amenitiesData\": [...],\n      \"eventtypes\": [...],\n      \"serviceTypeId\": {...},\n      \"vendorId\": \"507f1f77bcf86cd799439012\"\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 10,\n  \"totalPages\": 5,\n  \"totalResults\": 47\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get My Listings",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{accessToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/listings/my-listings?limit=10&page=1",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "listings",
+                                "my-listings"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Number of results per page (default: 10)"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number (default: 1)"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "venue",
+                                    "description": "Optional: Filter by type (venue or vendor)",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "description": "Get listings for the currently authenticated user/vendor. Returns only listings where vendorId matches the logged-in user's ID. Includes populated amenities, event types, subcategories, and service type. Response format: { results: [...], page, limit, totalPages, totalResults }"
+                    },
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/listings/my-listings?limit=10&page=1",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "listings",
+                                        "my-listings"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "cookie": [],
+                            "body": "{\n  \"results\": [\n    {\n      \"_id\": \"507f1f77bcf86cd799439011\",\n      \"name\": \"My Venue\",\n      \"listingtype\": \"venue\",\n      \"status\": \"approved\",\n      \"vendorId\": \"507f1f77bcf86cd799439012\",\n      \"amenties\": [...],\n      \"eventtypes\": [...],\n      \"subcategories\": [...],\n      \"serviceTypeId\": {...}\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 10,\n  \"totalPages\": 2,\n  \"totalResults\": 15\n}"
+                        }
+                    ]
                 }
             ],
             "description": "Listings management endpoints for creating, reading, updating, and deleting venue and vendor listings with aggregation and pagination support"

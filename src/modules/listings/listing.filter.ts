@@ -12,11 +12,11 @@ export const listingFilter = (filter: Record<string, any>) => {
       { hostingCompany: regex },
       { "vendorData.name": regex },
       { shortSummary: regex },
-      { "location.address": { $regex: regex } },
-      { "location.city": { $regex: regex } },
-      { "location.state": { $regex: regex } },
-      { "location.country": { $regex: regex } },
-      { "location.zipCode": { $regex: regex } },
+      { "location.address": regex },
+      { "location.city": regex },
+      { "location.state": regex },
+      { "location.country": regex },
+      { "location.zipCode": regex },
       { "packeges.name": regex },
       { "packeges.description": regex },
     ];
@@ -32,8 +32,8 @@ export const listingFilter = (filter: Record<string, any>) => {
   if (filter["VerificationStatus"]) {
     query["VerificationStatus"] = filter["VerificationStatus"];
   }
-  if (filter["type"]) {
-    query["type"] = filter["type"];
+  if (filter["listingtype"]) {
+    query["listingtype"] = filter["listingtype"];
   }
   if (filter["vendorId"]) {
     query["vendorId"] = new mongoose.Types.ObjectId(filter["vendorId"]);
@@ -47,7 +47,8 @@ export const listingFilter = (filter: Record<string, any>) => {
     };
   }
 
-  const { city, state, country, longitude, latitude, minPrice, maxPrice } = filter; // Destructure from filter
+  const { city, state, country, longitude, latitude, minPrice, maxPrice } =
+    filter; // Destructure from filter
 
   if (city) {
     query["location.city"] = city;
@@ -61,14 +62,12 @@ export const listingFilter = (filter: Record<string, any>) => {
     query["location.country"] = country;
   }
 
-
   if (minPrice && maxPrice) {
-    query["basePriceRange"]= {
-        $lte: maxPrice,
-        $gte: minPrice
-    }
+    query["basePriceRange"] = {
+      $lte: maxPrice,
+      $gte: minPrice,
+    };
   }
-
 
   // Geospatial filter
   const radiusInMeters = 5000;
@@ -84,7 +83,7 @@ export const listingFilter = (filter: Record<string, any>) => {
       },
     };
   }
-  if( filter["amenities"] ) {
+  if (filter["amenities"]) {
     const amenities = Array.isArray(filter["amenities"])
       ? filter["amenities"]
       : [filter["amenities"]];
@@ -92,7 +91,7 @@ export const listingFilter = (filter: Record<string, any>) => {
       $all: amenities.map((id: string) => new mongoose.Types.ObjectId(id)),
     };
   }
-  if(filter['venueStyles']) {
+  if (filter["venueStyles"]) {
     const venueStyles = Array.isArray(filter["venueStyles"])
       ? filter["venueStyles"]
       : [filter["venueStyles"]];
@@ -100,10 +99,10 @@ export const listingFilter = (filter: Record<string, any>) => {
       $in: venueStyles.map((id: string) => new mongoose.Types.ObjectId(id)),
     };
   }
-  if(filter['capacity']) {
-    query["capacity"] = { $gte: parseInt(filter['capacity']) };
+  if (filter["capacity"]) {
+    query["capacity"] = { $gte: parseInt(filter["capacity"]) };
   }
-  if(filter['layouts']) {
+  if (filter["layouts"]) {
     const layouts = Array.isArray(filter["layouts"])
       ? filter["layouts"]
       : [filter["layouts"]];
@@ -111,14 +110,14 @@ export const listingFilter = (filter: Record<string, any>) => {
       $all: layouts,
     };
   }
-  if(filter['outsideFoodAllowed'] !== undefined) {
-    query["outsideFoodAllowed"] = filter['outsideFoodAllowed'] === 'true';
+  if (filter["outsideFoodAllowed"] !== undefined) {
+    query["outsideFoodAllowed"] = filter["outsideFoodAllowed"] === "true";
   }
-  if(filter['alcoholAllowed'] !== undefined) {
-    query["alcoholAllowed"] = filter['alcoholAllowed'] === 'true';
+  if (filter["alcoholAllowed"] !== undefined) {
+    query["alcoholAllowed"] = filter["alcoholAllowed"] === "true";
   }
-  if(filter['inhouseBar'] !== undefined) {
-    query["inhouseBar"] = filter['inhouseBar'] === 'true';
+  if (filter["inhouseBar"] !== undefined) {
+    query["inhouseBar"] = filter["inhouseBar"] === "true";
   }
 
   return query;
