@@ -4,6 +4,8 @@ import { NewCreatedAmenities } from "./amenities.interfaces";
 
 const createAmenitiesBody: Record<keyof NewCreatedAmenities, any> = {
   name: Joi.string().required().trim(),
+  icon: Joi.string().optional(),
+  iconKey: Joi.string().optional(),
 };
 
 export const createAmenities = {

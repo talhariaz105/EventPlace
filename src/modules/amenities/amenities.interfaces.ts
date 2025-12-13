@@ -5,6 +5,8 @@ export interface IAmenities {
   name: string;
   isDeleted: boolean;
   deletedAt?: Date;
+  icon?: string;
+  iconKey?: string;
 }
 
 export interface IAmenitiesDoc extends IAmenities, Document {
