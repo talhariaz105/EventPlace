@@ -89,10 +89,11 @@ export const getNamesForDropdown = async (): Promise<
 > => {
   const amenities = await Amenities.find(
     { isDeleted: false },
-    { name: 1 }
+    { name: 1 ,icon: 1}
   ).lean();
   return amenities.map((item) => ({
     id: item._id.toString(),
     name: item.name,
+    icon: item.icon,
   }));
 };
