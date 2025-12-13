@@ -134,7 +134,13 @@ export const getListingById = async (
   const listing = await ServiceListing.findById(id)
     .populate("amenties")
     .populate("subcategories")
-    .populate("vendorId", "name email");
+    .populate("eventtypes")
+    .populate("serviceTypeId")
+    .populate("vendorId", "name email")
+    .populate({
+      path: "packages.amenties",
+      model: "Amenities",
+    });
 
   if (!listing) {
     throw new ApiError("Listing not found", httpStatus.NOT_FOUND);
@@ -240,7 +246,7 @@ export const getAdminListings = async (
   const page = parseInt(options["page"]) || 1;
   const limit = parseInt(options["limit"]) || 10;
   const skip = (page - 1) * limit;
-  const filter: any = {isDeleted: false };
+  const filter: any = { isDeleted: false };
   if (options["type"]) {
     filter.type = options["type"];
   }
