@@ -117,7 +117,13 @@ const getListingById = async (id) => {
     const listing = await listings_modal_1.default.findById(id)
         .populate("amenties")
         .populate("subcategories")
-        .populate("vendorId", "name email");
+        .populate("eventtypes")
+        .populate("serviceTypeId")
+        .populate("vendorId", "name email")
+        .populate({
+        path: "packages.amenties",
+        model: "Amenities",
+    });
     if (!listing) {
         throw new ApiError_1.default("Listing not found", http_status_1.default.NOT_FOUND);
     }
