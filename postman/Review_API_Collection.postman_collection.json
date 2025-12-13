@@ -1,0 +1,474 @@
+{
+    "info": {
+        "_postman_id": "review-api-collection-v1",
+        "name": "Review API Collection",
+        "description": "Complete API collection for Review module including creating, reading, updating, deleting, and managing reviews for services",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Create Review",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"reviewOn\": \"{{bookingId}}\",\n  \"rating\": 5,\n  \"comment\": \"Excellent service! The venue was perfect for our event.\",\n  \"reviewType\": \"positive\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/reviews",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews"
+                    ]
+                },
+                "description": "Create a new review for a completed booking. Requires authentication and completed booking status."
+            },
+            "response": []
+        },
+        {
+            "name": "Get All Reviews",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/reviews?page=1&limit=10",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews"
+                    ],
+                    "query": [
+                        {
+                            "key": "page",
+                            "value": "1",
+                            "description": "Page number for pagination"
+                        },
+                        {
+                            "key": "limit",
+                            "value": "10",
+                            "description": "Number of items per page"
+                        },
+                        {
+                            "key": "reviewType",
+                            "value": "positive",
+                            "disabled": true,
+                            "description": "Filter by review type: positive or negative"
+                        },
+                        {
+                            "key": "ratings",
+                            "value": "5",
+                            "disabled": true,
+                            "description": "Filter by rating (1-5), can be multiple comma-separated values"
+                        },
+                        {
+                            "key": "search",
+                            "value": "excellent",
+                            "disabled": true,
+                            "description": "Search in comments, service title, reviewer email, etc."
+                        },
+                        {
+                            "key": "isDeleted",
+                            "value": "false",
+                            "disabled": true,
+                            "description": "Filter by deletion status"
+                        },
+                        {
+                            "key": "reviewerRole",
+                            "value": "customer",
+                            "disabled": true,
+                            "description": "Filter by reviewer role"
+                        },
+                        {
+                            "key": "serviceCategories",
+                            "value": "{{serviceCategoryId}}",
+                            "disabled": true,
+                            "description": "Filter by service category ID"
+                        },
+                        {
+                            "key": "owners",
+                            "value": "{{vendorId}}",
+                            "disabled": true,
+                            "description": "Filter by service owner/vendor ID"
+                        }
+                    ]
+                },
+                "description": "Get all reviews with advanced filtering options including pagination, rating, review type, search, and more."
+            },
+            "response": []
+        },
+        {
+            "name": "Get Reviews for Service",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/reviews/service/{{serviceId}}?page=1&limit=10",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews",
+                        "service",
+                        "{{serviceId}}"
+                    ],
+                    "query": [
+                        {
+                            "key": "page",
+                            "value": "1",
+                            "description": "Page number for pagination"
+                        },
+                        {
+                            "key": "limit",
+                            "value": "10",
+                            "description": "Number of items per page"
+                        },
+                        {
+                            "key": "reviewType",
+                            "value": "positive",
+                            "disabled": true,
+                            "description": "Filter by review type: positive or negative"
+                        },
+                        {
+                            "key": "isDeleted",
+                            "value": "false",
+                            "disabled": true,
+                            "description": "Filter by deletion status"
+                        }
+                    ]
+                },
+                "description": "Get all reviews for a specific service with average rating and pagination. This endpoint is public and does not require authentication."
+            },
+            "response": []
+        },
+        {
+            "name": "Get Review by ID",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/reviews/{{reviewId}}",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews",
+                        "{{reviewId}}"
+                    ]
+                },
+                "description": "Get a single review by its ID with populated reviewer and booking information."
+            },
+            "response": []
+        },
+        {
+            "name": "Update Review",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Updated review: Great service overall, minor improvements needed.\",\n  \"reviewType\": \"positive\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/reviews/{{reviewId}}",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews",
+                        "{{reviewId}}"
+                    ]
+                },
+                "description": "Update an existing review. Only the reviewer or admin can update the review."
+            },
+            "response": []
+        },
+        {
+            "name": "Delete Review",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/reviews/{{reviewId}}",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews",
+                        "{{reviewId}}"
+                    ]
+                },
+                "description": "Soft delete a review (sets isDeleted to true). The review will not appear in public listings but remains in the database."
+            },
+            "response": []
+        },
+        {
+            "name": "Hide Review",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"hide\": true\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/reviews/{{reviewId}}/hide",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews",
+                        "{{reviewId}}",
+                        "hide"
+                    ]
+                },
+                "description": "Hide or unhide a review. Only the reviewer or admin can hide/unhide the review. Hidden reviews will not be visible in public listings."
+            },
+            "response": []
+        },
+        {
+            "name": "Unhide Review",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"hide\": false\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/reviews/{{reviewId}}/hide",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews",
+                        "{{reviewId}}",
+                        "hide"
+                    ]
+                },
+                "description": "Unhide a previously hidden review. Only the reviewer or admin can hide/unhide the review."
+            },
+            "response": []
+        },
+        {
+            "name": "Filter by Rating (Multiple)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/reviews?ratings=4&ratings=5&page=1&limit=10",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews"
+                    ],
+                    "query": [
+                        {
+                            "key": "ratings",
+                            "value": "4",
+                            "description": "Filter by rating 4"
+                        },
+                        {
+                            "key": "ratings",
+                            "value": "5",
+                            "description": "Filter by rating 5"
+                        },
+                        {
+                            "key": "page",
+                            "value": "1"
+                        },
+                        {
+                            "key": "limit",
+                            "value": "10"
+                        }
+                    ]
+                },
+                "description": "Get reviews filtered by multiple rating values (4 and 5 stars in this example)."
+            },
+            "response": []
+        },
+        {
+            "name": "Search Reviews",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/reviews?search=excellent venue&page=1&limit=10",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews"
+                    ],
+                    "query": [
+                        {
+                            "key": "search",
+                            "value": "excellent venue",
+                            "description": "Search term to find in comments, service details, reviewer info"
+                        },
+                        {
+                            "key": "page",
+                            "value": "1"
+                        },
+                        {
+                            "key": "limit",
+                            "value": "10"
+                        }
+                    ]
+                },
+                "description": "Search reviews across multiple fields including comments, service title/description, reviewer email, and service owner name."
+            },
+            "response": []
+        },
+        {
+            "name": "Get Negative Reviews",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "description": "JWT access token"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/reviews?reviewType=negative&page=1&limit=10",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reviews"
+                    ],
+                    "query": [
+                        {
+                            "key": "reviewType",
+                            "value": "negative",
+                            "description": "Filter by negative reviews"
+                        },
+                        {
+                            "key": "page",
+                            "value": "1"
+                        },
+                        {
+                            "key": "limit",
+                            "value": "10"
+                        }
+                    ]
+                },
+                "description": "Get all negative reviews with pagination."
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:4000/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "accessToken",
+            "value": "your-jwt-access-token-here",
+            "type": "string"
+        },
+        {
+            "key": "reviewId",
+            "value": "review-id-here",
+            "type": "string"
+        },
+        {
+            "key": "bookingId",
+            "value": "booking-id-here",
+            "type": "string"
+        },
+        {
+            "key": "serviceId",
+            "value": "service-id-here",
+            "type": "string"
+        },
+        {
+            "key": "serviceCategoryId",
+            "value": "category-id-here",
+            "type": "string"
+        },
+        {
+            "key": "vendorId",
+            "value": "vendor-id-here",
+            "type": "string"
+        }
+    ]
+}
