@@ -122,3 +122,93 @@ export const deleteServiceCategoryById = async (
 
   return serviceCategory;
 };
+
+/**
+ * Get service categories with subcategory count using aggregation
+ * @param {Object} filter - Search filter
+ * @param {Object} options - Pagination options
+ * @returns {Promise<{results: any[], page: number, limit: number, totalPages: number, totalResults: number}>}
+ */
+export const getServiceCategoriesWithSubCategoryCount = async (
+  filter: Record<string, any>,
+  options: IOptions
+): Promise<{
+  results: any[];
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalResults: number;
+}> => {
+  const page = Number(options?.page) ?? 1;
+  const limit = Number(options?.limit) ?? 10;
+  const skip = (page - 1) * limit;
+
+  // Build match stage for filtering
+  const matchStage: mongoose.FilterQuery<IServiceCategoryDoc> = {
+    $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }],
+  };
+
+  // Add search functionality
+  if (filter['search']) {
+    matchStage.name = { $regex: filter['search'], $options: "i" };
+  }
+
+  // Aggregation pipeline
+  const pipeline : mongoose.PipelineStage[] = [
+    { $match: matchStage },
+    {
+      $lookup: {
+        from: "subcategories",
+        let: { categoryId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$serviceCategory", "$$categoryId"] },
+                  {
+                    $or: [{ $eq: [{ $ifNull: ["$isDeleted", false] }, false] }],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        as: "subcategories",
+      },
+    },
+    {
+      $addFields: {
+        subCategoryCount: { $size: "$subcategories" },
+      },
+    },
+    {
+      $project: {
+        subcategories: 0,
+      },
+    },
+    { $sort: { createdAt: -1 } },
+  ];
+
+  // Get total count
+  const countPipeline: mongoose.PipelineStage[] = [...pipeline, { $count: "total" }];
+  const countResult = await ServiceCategory.aggregate(countPipeline);
+  const totalResults = countResult.length > 0 ? countResult[0].total : 0;
+
+  // Add pagination
+  pipeline.push({ $skip: skip });
+  pipeline.push({ $limit: limit });
+
+  // Execute aggregation
+  const results = await ServiceCategory.aggregate(pipeline);
+
+  const totalPages = Math.ceil(totalResults / limit);
+
+  return {
+    results,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  };
+};

@@ -13,6 +13,9 @@ router
     .post((0, auth_1.auth)("serviceCategory"), (0, validate_1.validate)(serviceCategory_1.serviceCategoryValidation.createServiceCategory), serviceCategory_1.serviceCategoryController.createServiceCategory)
     .get(serviceCategory_1.serviceCategoryController.getAllCategories);
 router
+    .route("/with-count")
+    .get(serviceCategory_1.serviceCategoryController.getServiceCategoriesWithSubCategoryCount);
+router
     .route("/:serviceCategoryId")
     .get((0, validate_1.validate)(serviceCategory_1.serviceCategoryValidation.getServiceCategory), serviceCategory_1.serviceCategoryController.getServiceCategory)
     .patch((0, auth_1.auth)("serviceCategory"), (0, validate_1.validate)(serviceCategory_1.serviceCategoryValidation.updateServiceCategory), serviceCategory_1.serviceCategoryController.updateServiceCategory)

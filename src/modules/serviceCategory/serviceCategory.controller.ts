@@ -96,3 +96,16 @@ export const deleteServiceCategory = catchAsync(
     }
   }
 );
+
+export const getServiceCategoriesWithSubCategoryCount = catchAsync(
+  async (req: Request, res: Response) => {
+    const filter = pick(req.query, ["search"]);
+    const options: IOptions = pick(req.query, ["sortBy", "limit", "page"]);
+    const result =
+      await serviceCategoryService.getServiceCategoriesWithSubCategoryCount(
+        filter,
+        options
+      );
+    res.send(result);
+  }
+);

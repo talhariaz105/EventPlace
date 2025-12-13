@@ -18,6 +18,10 @@ router
   .get(serviceCategoryController.getAllCategories);
 
 router
+  .route("/with-count")
+  .get(serviceCategoryController.getServiceCategoriesWithSubCategoryCount);
+
+router
   .route("/:serviceCategoryId")
   .get(
     validate(serviceCategoryValidation.getServiceCategory),

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteServiceCategoryById = exports.updateServiceCategoryById = exports.getServiceCategoryById = exports.getAllCategories = exports.queryServiceCategories = exports.createServiceCategory = void 0;
+exports.getServiceCategoriesWithSubCategoryCount = exports.deleteServiceCategoryById = exports.updateServiceCategoryById = exports.getServiceCategoryById = exports.getAllCategories = exports.queryServiceCategories = exports.createServiceCategory = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const serviceCategory_model_1 = __importDefault(require("./serviceCategory.model"));
 const ApiError_1 = __importDefault(require("../errors/ApiError"));
@@ -97,3 +97,76 @@ const deleteServiceCategoryById = async (serviceCategoryId) => {
     return serviceCategory;
 };
 exports.deleteServiceCategoryById = deleteServiceCategoryById;
+/**
+ * Get service categories with subcategory count using aggregation
+ * @param {Object} filter - Search filter
+ * @param {Object} options - Pagination options
+ * @returns {Promise<{results: any[], page: number, limit: number, totalPages: number, totalResults: number}>}
+ */
+const getServiceCategoriesWithSubCategoryCount = async (filter, options) => {
+    const page = Number(options?.page) ?? 1;
+    const limit = Number(options?.limit) ?? 10;
+    const skip = (page - 1) * limit;
+    // Build match stage for filtering
+    const matchStage = {
+        $or: [{ isDeleted: { $exists: false } }, { isDeleted: false }],
+    };
+    // Add search functionality
+    if (filter['search']) {
+        matchStage.name = { $regex: filter['search'], $options: "i" };
+    }
+    // Aggregation pipeline
+    const pipeline = [
+        { $match: matchStage },
+        {
+            $lookup: {
+                from: "subcategories",
+                let: { categoryId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$serviceCategory", "$$categoryId"] },
+                                    {
+                                        $or: [{ $eq: [{ $ifNull: ["$isDeleted", false] }, false] }],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                ],
+                as: "subcategories",
+            },
+        },
+        {
+            $addFields: {
+                subCategoryCount: { $size: "$subcategories" },
+            },
+        },
+        {
+            $project: {
+                subcategories: 0,
+            },
+        },
+        { $sort: { createdAt: -1 } },
+    ];
+    // Get total count
+    const countPipeline = [...pipeline, { $count: "total" }];
+    const countResult = await serviceCategory_model_1.default.aggregate(countPipeline);
+    const totalResults = countResult.length > 0 ? countResult[0].total : 0;
+    // Add pagination
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limit });
+    // Execute aggregation
+    const results = await serviceCategory_model_1.default.aggregate(pipeline);
+    const totalPages = Math.ceil(totalResults / limit);
+    return {
+        results,
+        page,
+        limit,
+        totalPages,
+        totalResults,
+    };
+};
+exports.getServiceCategoriesWithSubCategoryCount = getServiceCategoriesWithSubCategoryCount;

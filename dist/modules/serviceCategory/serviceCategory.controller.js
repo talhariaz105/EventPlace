@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteServiceCategory = exports.updateServiceCategory = exports.getServiceCategory = exports.getAllCategories = exports.getServiceCategories = exports.createServiceCategory = void 0;
+exports.getServiceCategoriesWithSubCategoryCount = exports.deleteServiceCategory = exports.updateServiceCategory = exports.getServiceCategory = exports.getAllCategories = exports.getServiceCategories = exports.createServiceCategory = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
@@ -85,4 +85,10 @@ exports.deleteServiceCategory = (0, catchAsync_1.default)(async (req, res) => {
             data: null,
         });
     }
+});
+exports.getServiceCategoriesWithSubCategoryCount = (0, catchAsync_1.default)(async (req, res) => {
+    const filter = (0, pick_1.default)(req.query, ["search"]);
+    const options = (0, pick_1.default)(req.query, ["sortBy", "limit", "page"]);
+    const result = await serviceCategoryService.getServiceCategoriesWithSubCategoryCount(filter, options);
+    res.send(result);
 });
