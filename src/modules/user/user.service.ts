@@ -144,6 +144,7 @@ export const loginWithGoogle = async (body: any): Promise<IUserDoc> => {
 export const getme = async (userId: mongoose.Types.ObjectId) => {
   const users = await User.aggregate([
     { $match: { _id: userId, isDeleted: false } },
+    { $project: { password: 0 }},
   ]);
   if (!users || users.length === 0) {
     throw new ApiError('User not found', httpStatus.NOT_FOUND);

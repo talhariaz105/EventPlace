@@ -36,6 +36,10 @@ exports.createAmenities = (0, catchAsync_1.default)(async (req, res) => {
 exports.getAmenities = (0, catchAsync_1.default)(async (req, res) => {
     const filter = (0, pick_1.default)(req.query, ["name", "isDeleted"]);
     const options = (0, pick_1.default)(req.query, ["sortBy", "limit", "page", "projectBy"]);
+    // Add search functionality
+    if (req.query["search"]) {
+        filter.name = { $regex: req.query["search"], $options: "i" };
+    }
     const result = await amenitiesService.queryAmenities(filter, options);
     res.send(result);
 });

@@ -72,9 +72,9 @@ export const getUsers = catchAsync(async (req: Request, res: Response) => {
     queryParams.role = role as string;
   }
   
-  if (req.user._id) {
-    queryParams.userId = req.user._id;
-  }
+  // if (req.user._id) {
+  //   queryParams.userId = req.user._id;
+  // }
   
   const data = await userService.getUsers(queryParams);
   res.send(data);

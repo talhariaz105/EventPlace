@@ -82,9 +82,9 @@ exports.getAllUsers = (0, catchAsync_1.default)(async (req, res) => {
     if (role) {
         queryParams.role = role;
     }
-    if (req.user._id) {
-        queryParams.userId = req.user._id;
-    }
+    // if (req.user._id) {
+    //   queryParams.userId = req.user._id;
+    // }
     const data = await userService.getUsers(queryParams);
     res.send(data);
 });

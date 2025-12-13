@@ -124,6 +124,7 @@ exports.loginWithGoogle = loginWithGoogle;
 const getme = async (userId) => {
     const users = await user_model_1.default.aggregate([
         { $match: { _id: userId, isDeleted: false } },
+        { $project: { password: 0 } },
     ]);
     if (!users || users.length === 0) {
         throw new ApiError_1.default('User not found', http_status_1.default.NOT_FOUND);

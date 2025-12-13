@@ -16,6 +16,12 @@ export const createAmenities = catchAsync(
 export const getAmenities = catchAsync(async (req: Request, res: Response) => {
   const filter = pick(req.query, ["name", "isDeleted"]);
   const options = pick(req.query, ["sortBy", "limit", "page", "projectBy"]);
+
+  // Add search functionality
+  if (req.query["search"]) {
+    filter.name = { $regex: req.query["search"], $options: "i" };
+  }
+
   const result = await amenitiesService.queryAmenities(filter, options);
   res.send(result);
 });
