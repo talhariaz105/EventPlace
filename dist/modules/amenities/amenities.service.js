@@ -71,10 +71,11 @@ exports.deleteAmenitiesById = deleteAmenitiesById;
  * @returns {Promise<Array<{id: string, name: string}>>}
  */
 const getNamesForDropdown = async () => {
-    const amenities = await amenities_model_1.default.find({ isDeleted: false }, { name: 1 }).lean();
+    const amenities = await amenities_model_1.default.find({ isDeleted: false }, { name: 1, icon: 1 }).lean();
     return amenities.map((item) => ({
         id: item._id.toString(),
         name: item.name,
+        icon: item.icon,
     }));
 };
 exports.getNamesForDropdown = getNamesForDropdown;

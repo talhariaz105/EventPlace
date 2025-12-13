@@ -8,6 +8,8 @@ const joi_1 = __importDefault(require("joi"));
 const custom_validation_1 = require("../validate/custom.validation");
 const createAmenitiesBody = {
     name: joi_1.default.string().required().trim(),
+    icon: joi_1.default.string().optional(),
+    iconKey: joi_1.default.string().optional(),
 };
 exports.createAmenities = {
     body: joi_1.default.object().keys(createAmenitiesBody),

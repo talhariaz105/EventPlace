@@ -22,13 +22,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AcceptInvitation = exports.verifyEmail = exports.sendVerificationEmail = exports.resetPassword = exports.forgotPassword = exports.refreshTokens = exports.logout = exports.login = exports.loginWithGoogle = exports.register = void 0;
+exports.updatePassword = exports.AcceptInvitation = exports.verifyEmail = exports.sendVerificationEmail = exports.resetPassword = exports.forgotPassword = exports.refreshTokens = exports.logout = exports.login = exports.loginWithGoogle = exports.register = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const token_1 = require("../token");
 const user_1 = require("../user");
 const authService = __importStar(require("./auth.service"));
 const email_1 = require("../email");
+const ApiError_1 = __importDefault(require("../errors/ApiError"));
 exports.register = (0, catchAsync_1.default)(async (req, res) => {
     const user = await user_1.userService.registerUser(req.body);
     const tokens = await token_1.tokenService.generateAuthTokens(user);
@@ -58,30 +59,65 @@ exports.forgotPassword = (0, catchAsync_1.default)(async (req, res) => {
     const resetPasswordToken = await token_1.tokenService.generateResetPasswordToken(req.body.email);
     await email_1.emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
     res.status(http_status_1.default.OK).send({
-        message: 'Reset password email sent successfully'
+        message: "Reset password email sent successfully",
     });
 });
 exports.resetPassword = (0, catchAsync_1.default)(async (req, res) => {
-    await authService.resetPassword(req.query['token'], req.body.password);
+    await authService.resetPassword(req.query["token"], req.body.password);
     res.status(http_status_1.default.OK).send({
-        message: 'Password reset successfully'
+        message: "Password reset successfully",
     });
 });
 exports.sendVerificationEmail = (0, catchAsync_1.default)(async (req, res) => {
     const verifyEmailToken = await token_1.tokenService.generateVerifyEmailToken(req.user);
     await email_1.emailService.sendVerificationEmail(req.user.email, verifyEmailToken, req.user.name);
     res.status(http_status_1.default.OK).send({
-        message: 'Verification email sent successfully'
+        message: "Verification email sent successfully",
     });
 });
 exports.verifyEmail = (0, catchAsync_1.default)(async (req, res) => {
-    await authService.verifyEmail(req.query['token']);
+    await authService.verifyEmail(req.query["token"]);
     res.status(http_status_1.default.OK).send({
-        message: 'Email verified successfully'
+        message: "Email verified successfully",
     });
 });
 exports.AcceptInvitation = (0, catchAsync_1.default)(async (req, res) => {
     const user = await authService.AcceptInvitation(req.body);
     const tokens = await token_1.tokenService.generateAuthTokens(user);
     res.status(http_status_1.default.CREATED).send({ user, tokens });
+});
+exports.updatePassword = (0, catchAsync_1.default)(async (req, res, next) => {
+    const { password, oldPassword } = req.body;
+    const { user } = req;
+    if (!password || !oldPassword) {
+        const fieldErrors = {
+            password: password ? undefined : "Password is required.",
+            oldPassword: oldPassword ? undefined : "Old Password is required.",
+        };
+        return next(new ApiError_1.default("Validation failed", 400, fieldErrors));
+    }
+    if (!user) {
+        return next(new ApiError_1.default("user not found", 404, { user: "user not found" }));
+    }
+    // check if the old password is equal to stored password(correct old password)
+    if (!(await user.isPasswordMatch(oldPassword))) {
+        const fieldErrors = {
+            oldPassword: "Provided old password is incorrect",
+        };
+        return next(new ApiError_1.default("Validation failed", 400, fieldErrors));
+    }
+    // new password must not be equal to old password
+    if (await user.isPasswordMatch(password)) {
+        const fieldErrors = {
+            password: "Your new password must be different from the current one.",
+        };
+        return next(new ApiError_1.default("Validation failed", 400, fieldErrors));
+    }
+    user.password = password;
+    await user.save({ validateBeforeSave: false });
+    return res.status(200).json({
+        status: "success",
+        data: { email: user.email },
+        message: "Password updated Successfully",
+    });
 });

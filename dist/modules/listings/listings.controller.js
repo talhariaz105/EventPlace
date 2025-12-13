@@ -95,7 +95,7 @@ exports.deleteListing = (0, catchAsync_1.default)(async (req, res) => {
  * Get all listings for admin
  */
 exports.getAdminListings = (0, catchAsync_1.default)(async (req, res) => {
-    const options = (0, pick_1.default)(req.query, ["limit", "page"]);
+    const options = (0, pick_1.default)(req.query, ["limit", "page", "type"]);
     const result = await listingsService.getAdminListings(options);
     res.send(result);
 });
