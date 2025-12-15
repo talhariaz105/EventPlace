@@ -240,7 +240,7 @@ const getMyListings = async (vendorId, options) => {
     const skip = (page - 1) * limit;
     const filter = { vendorId, isDeleted: false };
     if (options["listingtype"]) {
-        filter.type = options["listingtype"];
+        filter.listingtype = options["listingtype"];
     }
     const listings = await listings_modal_1.default.find(filter)
         .populate("amenties")
