@@ -54,7 +54,7 @@ export const getListingById = catchAsync(
 export const getListingsByVendorId = catchAsync(
   async (req: Request, res: Response) => {
     if (typeof req.params["vendorId"] === "string") {
-      const options = pick(req.query, ["type", "limit", "page"]);
+      const options = pick(req.query, ["listingtype", "limit", "page"]);
       const result = await listingsService.getListingsByVendorId(
         new mongoose.Types.ObjectId(req.params["vendorId"]),
         options
@@ -109,7 +109,7 @@ export const getMyListings = catchAsync(async (req: Request, res: Response) => {
     res.status(httpStatus.UNAUTHORIZED).send({ message: "Unauthorized" });
     return;
   }
-  const options = pick(req.query, ["limit", "page", "type"]);
+  const options = pick(req.query, ["limit", "page", "listingtype"]);
   const result = await listingsService.getMyListings(
     new mongoose.Types.ObjectId(vendorId),
     options

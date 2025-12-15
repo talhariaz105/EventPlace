@@ -247,8 +247,8 @@ export const getAdminListings = async (
   const limit = parseInt(options["limit"]) || 10;
   const skip = (page - 1) * limit;
   const filter: any = { isDeleted: false };
-  if (options["type"]) {
-    filter.type = options["type"];
+  if (options["listingtype"]) {
+    filter.type = options["listingtype"];
   }
 
   const listings = await ServiceListing.find(filter)
