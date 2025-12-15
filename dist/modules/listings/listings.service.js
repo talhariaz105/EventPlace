@@ -203,7 +203,7 @@ const getAdminListings = async (options) => {
     const skip = (page - 1) * limit;
     const filter = { isDeleted: false };
     if (options["listingtype"]) {
-        filter.type = options["listingtype"];
+        filter.listingtype = options["listingtype"];
     }
     const listings = await listings_modal_1.default.find(filter)
         .populate("vendorId", "name email profilePicture")
