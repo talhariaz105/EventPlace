@@ -68,7 +68,7 @@ exports.getListingById = (0, catchAsync_1.default)(async (req, res) => {
  */
 exports.getListingsByVendorId = (0, catchAsync_1.default)(async (req, res) => {
     if (typeof req.params["vendorId"] === "string") {
-        const options = (0, pick_1.default)(req.query, ["type", "limit", "page"]);
+        const options = (0, pick_1.default)(req.query, ["listingtype", "limit", "page"]);
         const result = await listingsService.getListingsByVendorId(new mongoose_1.default.Types.ObjectId(req.params["vendorId"]), options);
         res.send(result);
     }
@@ -108,7 +108,7 @@ exports.getMyListings = (0, catchAsync_1.default)(async (req, res) => {
         res.status(http_status_1.default.UNAUTHORIZED).send({ message: "Unauthorized" });
         return;
     }
-    const options = (0, pick_1.default)(req.query, ["limit", "page", "type"]);
+    const options = (0, pick_1.default)(req.query, ["limit", "page", "listingtype"]);
     const result = await listingsService.getMyListings(new mongoose_1.default.Types.ObjectId(vendorId), options);
     res.send(result);
 });

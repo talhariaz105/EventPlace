@@ -202,8 +202,8 @@ const getAdminListings = async (options) => {
     const limit = parseInt(options["limit"]) || 10;
     const skip = (page - 1) * limit;
     const filter = { isDeleted: false };
-    if (options["type"]) {
-        filter.type = options["type"];
+    if (options["listingtype"]) {
+        filter.type = options["listingtype"];
     }
     const listings = await listings_modal_1.default.find(filter)
         .populate("vendorId", "name email profilePicture")
