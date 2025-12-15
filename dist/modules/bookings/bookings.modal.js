@@ -34,6 +34,19 @@ const BookingSchema = new mongoose_1.Schema({
         required: true,
         min: [0, "Total price must be positive"],
     },
+    totalAmount: {
+        type: Number,
+        required: true,
+        min: [0, "Total amount must be positive"],
+    },
+    discountAmount: {
+        type: Number,
+        default: 0,
+    },
+    couponCode: {
+        type: String,
+        trim: true,
+    },
     paymentStatus: {
         type: Boolean,
         default: false,
@@ -60,9 +73,44 @@ const BookingSchema = new mongoose_1.Schema({
         type: Boolean,
         default: false,
     },
+    cancelRequestBy: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    cancelRequestDate: {
+        type: Date,
+    },
     cancelReason: {
         type: String,
         trim: true,
+    },
+    refunded: {
+        type: Boolean,
+        default: false,
+    },
+    refundAmount: {
+        type: Number,
+    },
+    refundType: {
+        type: String,
+        enum: ["Full", "Partial"],
+    },
+    refundId: {
+        type: String,
+        trim: true,
+    },
+    extensionRequest: {
+        type: Boolean,
+        default: false,
+    },
+    extensionDetails: {
+        requestedCheckOut: Date,
+        additionalAmount: Number,
+        status: {
+            type: String,
+            enum: ["pending", "accepted", "rejected"],
+        },
+        paymentIntentId: String,
     },
     servicePrice: [
         {

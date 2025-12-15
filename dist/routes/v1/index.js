@@ -14,6 +14,7 @@ const subCategory_route_1 = __importDefault(require("./subCategory.route"));
 const amenities_route_1 = __importDefault(require("./amenities.route"));
 const listings_route_1 = __importDefault(require("./listings.route"));
 const review_route_1 = __importDefault(require("./review.route"));
+const booking_route_1 = __importDefault(require("./booking.route"));
 const config_1 = __importDefault(require("../../config/config"));
 const router = express_1.default.Router();
 const defaultIRoute = [
@@ -52,6 +53,10 @@ const defaultIRoute = [
     {
         path: "/reviews",
         route: review_route_1.default,
+    },
+    {
+        path: "/bookings",
+        route: booking_route_1.default,
     },
 ];
 const devIRoute = [

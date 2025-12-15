@@ -290,8 +290,8 @@ export const getMyListings = async (
   const limit = parseInt(options["limit"]) || 10;
   const skip = (page - 1) * limit;
   const filter: any = { vendorId, isDeleted: false };
-  if (options["type"]) {
-    filter.type = options["type"];
+  if (options["listingtype"]) {
+    filter.type = options["listingtype"];
   }
 
   const listings = await ServiceListing.find(filter)
@@ -304,10 +304,7 @@ export const getMyListings = async (
     .limit(limit)
     .lean();
 
-  const totalResults = await ServiceListing.countDocuments({
-    vendorId,
-    isDeleted: false,
-  });
+  const totalResults = await ServiceListing.countDocuments(filter);
   const totalPages = Math.ceil(totalResults / limit);
 
   return {

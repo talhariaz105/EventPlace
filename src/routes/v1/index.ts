@@ -9,6 +9,7 @@ import subCategoryRoute from "./subCategory.route";
 import amenitiesRoute from "./amenities.route";
 import listingsRoute from "./listings.route";
 import reviewRoute from "./review.route";
+import bookingRoute from "./booking.route";
 
 import config from "../../config/config";
 
@@ -55,6 +56,10 @@ const defaultIRoute: IRoute[] = [
   {
     path: "/reviews",
     route: reviewRoute,
+  },
+  {
+    path: "/bookings",
+    route: bookingRoute,
   },
 ];
 

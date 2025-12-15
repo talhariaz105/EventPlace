@@ -239,8 +239,8 @@ const getMyListings = async (vendorId, options) => {
     const limit = parseInt(options["limit"]) || 10;
     const skip = (page - 1) * limit;
     const filter = { vendorId, isDeleted: false };
-    if (options["type"]) {
-        filter.type = options["type"];
+    if (options["listingtype"]) {
+        filter.type = options["listingtype"];
     }
     const listings = await listings_modal_1.default.find(filter)
         .populate("amenties")
@@ -251,10 +251,7 @@ const getMyListings = async (vendorId, options) => {
         .skip(skip)
         .limit(limit)
         .lean();
-    const totalResults = await listings_modal_1.default.countDocuments({
-        vendorId,
-        isDeleted: false,
-    });
+    const totalResults = await listings_modal_1.default.countDocuments(filter);
     const totalPages = Math.ceil(totalResults / limit);
     return {
         results: listings,
