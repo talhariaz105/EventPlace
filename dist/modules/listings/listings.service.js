@@ -141,8 +141,8 @@ const getListingsByVendorId = async (vendorId, options) => {
     const limit = parseInt(options["limit"]) || 10;
     const skip = (page - 1) * limit;
     const filter = { vendorId, isDeleted: false };
-    if (options["type"]) {
-        filter.type = options["type"];
+    if (options["listingtype"]) {
+        filter.listingtype = options["listingtype"];
     }
     const listings = await listings_modal_1.default.find(filter)
         .populate("amenties")

@@ -166,8 +166,8 @@ export const getListingsByVendorId = async (
 
   const filter: any = { vendorId, isDeleted: false };
 
-  if (options["type"]) {
-    filter.type = options["type"];
+  if (options["listingtype"]) {
+    filter.listingtype = options["listingtype"];
   }
 
   const listings = await ServiceListing.find(filter)
