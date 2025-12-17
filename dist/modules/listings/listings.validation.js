@@ -98,7 +98,7 @@ const createListingsBody = {
     layouts: joi_1.default.array().items(joi_1.default.string()).optional(),
     subcategories: joi_1.default.array().items(joi_1.default.string().custom(custom_validation_1.objectId)).optional(),
     listingtype: joi_1.default.string().valid("venue", "vendor"),
-    ispublished: joi_1.default.boolean().optional().default(false),
+    ispublished: joi_1.default.boolean().optional(),
     Vendorrolesandterms: joi_1.default.object().keys({
         travelfee: joi_1.default.boolean().required(),
         accommodation: joi_1.default.boolean().required(),

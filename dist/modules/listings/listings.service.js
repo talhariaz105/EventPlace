@@ -46,9 +46,9 @@ const queryVenuesandVendor = async (filter, options) => {
     const sortParts = sortBy.split(":");
     const sortField = sortParts[0];
     const sortOrder = sortParts[1] === "desc" ? -1 : 1;
+    console.log("Filter in service...:", filter, (0, listing_filter_1.listingFilter)(filter));
     // Build match stage
     const matchStage = {
-        listingtype: "venue",
         isDeleted: false,
         ispublished: true,
         ...(0, listing_filter_1.listingFilter)(filter),
@@ -101,7 +101,7 @@ const queryVenuesandVendor = async (filter, options) => {
             },
         },
     ];
-    const result = await listings_venue_1.default.aggregate(pipeline);
+    const result = await listings_modal_1.default.aggregate(pipeline);
     const totalResults = result[0]?.totalCount[0]?.count || 0;
     const totalPages = Math.ceil(totalResults / limit);
     return {

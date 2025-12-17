@@ -56,9 +56,10 @@ export const queryVenuesandVendor = async (
   const sortField = sortParts[0];
   const sortOrder = sortParts[1] === "desc" ? -1 : 1;
 
+  console.log("Filter in service...:", filter,listingFilter(filter));
   // Build match stage
   const matchStage: mongoose.FilterQuery<IListingsModal> = {
-    listingtype: "venue",
+  
     isDeleted: false,
     ispublished: true,
     ...listingFilter(filter),
@@ -114,7 +115,7 @@ export const queryVenuesandVendor = async (
     },
   ];
 
-  const result = await VenueListing.aggregate(pipeline);
+  const result = await ServiceListing.aggregate(pipeline);
 
   const totalResults = result[0]?.totalCount[0]?.count || 0;
   const totalPages = Math.ceil(totalResults / limit);

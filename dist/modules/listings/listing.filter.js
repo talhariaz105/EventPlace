@@ -92,7 +92,7 @@ const listingFilter = (filter) => {
             $in: venueStyles.map((id) => new mongoose_1.default.Types.ObjectId(id)),
         };
     }
-    if (filter["capacity"]) {
+    if (filter["c"]) {
         query["capacity"] = { $gte: parseInt(filter["capacity"]) };
     }
     if (filter["layouts"]) {

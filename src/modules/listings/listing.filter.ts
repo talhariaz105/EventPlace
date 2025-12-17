@@ -99,7 +99,7 @@ export const listingFilter = (filter: Record<string, any>) => {
       $in: venueStyles.map((id: string) => new mongoose.Types.ObjectId(id)),
     };
   }
-  if (filter["capacity"]) {
+  if (filter["c"]) {
     query["capacity"] = { $gte: parseInt(filter["capacity"]) };
   }
   if (filter["layouts"]) {
