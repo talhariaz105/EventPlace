@@ -103,7 +103,7 @@ const createListingsBody = {
   layouts: Joi.array().items(Joi.string()).optional(),
   subcategories: Joi.array().items(Joi.string().custom(objectId)).optional(),
   listingtype: Joi.string().valid("venue", "vendor"),
-  ispublished: Joi.boolean().optional().default(false),
+  ispublished: Joi.boolean().optional(),
   Vendorrolesandterms: Joi.object().keys({
     travelfee: Joi.boolean().required(),
     accommodation: Joi.boolean().required(),
