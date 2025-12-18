@@ -73,12 +73,12 @@ const devIRoute: IRoute[] = [
 
 // Globally Routes
 defaultIRoute.forEach((route) => {
-  router.use(route.path, route.route);
+  router.use(route.path, route.route);    
 });
 
 /* istanbul ignore next */
 
-if (config.env === "development") {
+if (config.env === "development") { 
   devIRoute.forEach((route) => {
     router.use(route.path, route.route);
   });

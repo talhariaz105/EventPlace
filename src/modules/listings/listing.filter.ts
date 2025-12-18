@@ -68,6 +68,12 @@ export const listingFilter = (filter: Record<string, any>) => {
       $gte: minPrice,
     };
   }
+  else if (minPrice) {
+    query["basePriceRange"] = { $gte: minPrice };
+  }
+  else if (maxPrice) {
+    query["basePriceRange"] = { $lte: maxPrice };
+  }
 
   // Geospatial filter
   const radiusInMeters = 5000;
@@ -95,11 +101,11 @@ export const listingFilter = (filter: Record<string, any>) => {
     const venueStyles = Array.isArray(filter["venueStyles"])
       ? filter["venueStyles"]
       : [filter["venueStyles"]];
-    query["venueStyles"] = {
-      $in: venueStyles.map((id: string) => new mongoose.Types.ObjectId(id)),
+    query["venueStyle"] = {
+      $in: venueStyles,
     };
   }
-  if (filter["c"]) {
+  if (filter["capacity"]) {
     query["capacity"] = { $gte: parseInt(filter["capacity"]) };
   }
   if (filter["layouts"]) {
@@ -107,7 +113,7 @@ export const listingFilter = (filter: Record<string, any>) => {
       ? filter["layouts"]
       : [filter["layouts"]];
     query["layouts"] = {
-      $all: layouts,
+      $in: layouts,
     };
   }
   if (filter["outsideFoodAllowed"] !== undefined) {

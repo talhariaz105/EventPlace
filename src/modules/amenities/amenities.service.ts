@@ -70,14 +70,8 @@ export const updateAmenitiesById = async (
 export const deleteAmenitiesById = async (
   amenitiesId: mongoose.Types.ObjectId
 ): Promise<IAmenitiesDoc | null> => {
-  const amenities = await getAmenitiesById(amenitiesId);
-  if (!amenities) {
-    throw new ApiError("Amenities not found", httpStatus.NOT_FOUND);
-  }
-  amenities.isDeleted = true;
-  amenities.deletedAt = new Date();
-  await amenities.save();
-  return amenities;
+   await Amenities.findByIdAndDelete(amenitiesId);
+   return null;
 };
 
 /**
@@ -87,8 +81,7 @@ export const deleteAmenitiesById = async (
 export const getNamesForDropdown = async (): Promise<
   Array<{ id: string; name: string }>
 > => {
-  const amenities = await Amenities.find(
-    { isDeleted: false },
+  const amenities = await Amenities.find({},
     { name: 1 ,icon: 1}
   ).lean();
   return amenities.map((item) => ({

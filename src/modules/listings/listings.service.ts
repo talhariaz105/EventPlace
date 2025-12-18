@@ -103,10 +103,33 @@ export const queryVenuesandVendor = async (
         localField: "vendorId",
         foreignField: "_id",
         as: "vendorData",
+        pipeline: [
+          {
+            $project: {
+              name: 1,
+              profilePicture: 1,
+              
+            },
+          },
+        ],
       },
     },
     { $match: matchStage },
     { $sort: { [sortField]: sortOrder } },
+    {
+      $project: {
+        serviceTypeData: 1,
+        vendorData: { $arrayElemAt: ["$vendorData", 0] },
+        name: 1,
+        listingtype: 1,
+        description: 1,
+        location: 1,
+        capacity: 1,
+        basePriceRange: 1,
+        media: 1,
+        logo: 1
+      },
+    },
     {
       $facet: {
         results: [{ $skip: skip }, { $limit: limit }],

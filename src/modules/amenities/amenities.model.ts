@@ -11,10 +11,6 @@ const amenitiesSchema = new mongoose.Schema<IAmenitiesDoc, IAmenitiesModel>(
       unique: true,
       trim: true,
     },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
     deletedAt: {
       type: Date,
     },

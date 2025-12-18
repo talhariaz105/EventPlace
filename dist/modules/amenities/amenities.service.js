@@ -56,14 +56,8 @@ exports.updateAmenitiesById = updateAmenitiesById;
  * @returns {Promise<IAmenitiesDoc | null>}
  */
 const deleteAmenitiesById = async (amenitiesId) => {
-    const amenities = await (0, exports.getAmenitiesById)(amenitiesId);
-    if (!amenities) {
-        throw new ApiError_1.default("Amenities not found", http_status_1.default.NOT_FOUND);
-    }
-    amenities.isDeleted = true;
-    amenities.deletedAt = new Date();
-    await amenities.save();
-    return amenities;
+    await amenities_model_1.default.findByIdAndDelete(amenitiesId);
+    return null;
 };
 exports.deleteAmenitiesById = deleteAmenitiesById;
 /**
@@ -71,7 +65,7 @@ exports.deleteAmenitiesById = deleteAmenitiesById;
  * @returns {Promise<Array<{id: string, name: string}>>}
  */
 const getNamesForDropdown = async () => {
-    const amenities = await amenities_model_1.default.find({ isDeleted: false }, { name: 1, icon: 1 }).lean();
+    const amenities = await amenities_model_1.default.find({}, { name: 1, icon: 1 }).lean();
     return amenities.map((item) => ({
         id: item._id.toString(),
         name: item.name,

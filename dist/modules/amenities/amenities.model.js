@@ -13,10 +13,6 @@ const amenitiesSchema = new mongoose_1.default.Schema({
         unique: true,
         trim: true,
     },
-    isDeleted: {
-        type: Boolean,
-        default: false,
-    },
     deletedAt: {
         type: Date,
     },

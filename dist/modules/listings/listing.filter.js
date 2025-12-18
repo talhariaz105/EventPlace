@@ -63,6 +63,12 @@ const listingFilter = (filter) => {
             $gte: minPrice,
         };
     }
+    else if (minPrice) {
+        query["basePriceRange"] = { $gte: minPrice };
+    }
+    else if (maxPrice) {
+        query["basePriceRange"] = { $lte: maxPrice };
+    }
     // Geospatial filter
     const radiusInMeters = 5000;
     const earthRadiusInMeters = 6378137;
@@ -88,11 +94,11 @@ const listingFilter = (filter) => {
         const venueStyles = Array.isArray(filter["venueStyles"])
             ? filter["venueStyles"]
             : [filter["venueStyles"]];
-        query["venueStyles"] = {
-            $in: venueStyles.map((id) => new mongoose_1.default.Types.ObjectId(id)),
+        query["venueStyle"] = {
+            $in: venueStyles,
         };
     }
-    if (filter["c"]) {
+    if (filter["capacity"]) {
         query["capacity"] = { $gte: parseInt(filter["capacity"]) };
     }
     if (filter["layouts"]) {
@@ -100,7 +106,7 @@ const listingFilter = (filter) => {
             ? filter["layouts"]
             : [filter["layouts"]];
         query["layouts"] = {
-            $all: layouts,
+            $in: layouts,
         };
     }
     if (filter["outsideFoodAllowed"] !== undefined) {
