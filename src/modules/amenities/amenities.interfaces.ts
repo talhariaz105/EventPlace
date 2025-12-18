@@ -3,8 +3,6 @@ import { QueryResult } from "../paginate/paginate";
 
 export interface IAmenities {
   name: string;
-  isDeleted: boolean;
-  deletedAt?: Date;
   icon?: string;
   iconKey?: string;
 }

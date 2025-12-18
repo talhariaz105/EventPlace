@@ -13,9 +13,6 @@ const amenitiesSchema = new mongoose_1.default.Schema({
         unique: true,
         trim: true,
     },
-    deletedAt: {
-        type: Date,
-    },
     icon: {
         type: String,
     },

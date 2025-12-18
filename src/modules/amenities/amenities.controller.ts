@@ -14,7 +14,7 @@ export const createAmenities = catchAsync(
 );
 
 export const getAmenities = catchAsync(async (req: Request, res: Response) => {
-  const filter = pick(req.query, ["name", "isDeleted"]);
+  const filter = pick(req.query, ["name"]);
   const options = pick(req.query, ["sortBy", "limit", "page", "projectBy"]);
 
   // Add search functionality
