@@ -130,7 +130,7 @@ export const loginWithGoogle = async (body: any): Promise<IUserDoc> => {
   user = await User.create({
     googleId: userData?.sub,
     name: userData?.given_name || 'Unknown',
-    role: 'admin',
+    role: role,
     email,
     isEmailVerified: true,
     providers: ['google'],

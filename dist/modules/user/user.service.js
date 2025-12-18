@@ -113,7 +113,7 @@ const loginWithGoogle = async (body) => {
     user = await user_model_1.default.create({
         googleId: userData?.sub,
         name: userData?.given_name || 'Unknown',
-        role: 'admin',
+        role: role,
         email,
         isEmailVerified: true,
         providers: ['google'],
