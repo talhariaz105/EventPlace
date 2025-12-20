@@ -157,6 +157,12 @@ const listingsSchema = new mongoose_1.default.Schema({
             ref: "EventType",
         },
     ],
+    savedBy: [
+        {
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: "User",
+        }
+    ],
 }, {
     timestamps: true,
     discriminatorKey: "listingtype",

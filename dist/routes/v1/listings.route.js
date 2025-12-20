@@ -28,6 +28,14 @@ router
 router
     .route("/my-listings")
     .get((0, auth_1.auth)(), (0, validate_1.validate)(listings_1.listingsValidation.getAdminOrMyListings), listings_1.listingsController.getMyListings);
+// Get saved listings for current user
+router
+    .route("/saved")
+    .get((0, auth_1.auth)(), (0, validate_1.validate)(listings_1.listingsValidation.getAdminOrMyListings), listings_1.listingsController.getSavedListings);
+// Toggle save/unsave listing
+router
+    .route("/:listingsId/save")
+    .post((0, auth_1.auth)(), (0, validate_1.validate)(listings_1.listingsValidation.getListingsById), listings_1.listingsController.toggleSaveListing);
 // Get listings by vendor user ID
 router
     .route("/vendor/:vendorId")

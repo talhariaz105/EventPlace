@@ -42,6 +42,24 @@ router
     listingsController.getMyListings
   );
 
+// Get saved listings for current user
+router
+  .route("/saved")
+  .get(
+    auth(),
+    validate(listingsValidation.getAdminOrMyListings),
+    listingsController.getSavedListings
+  );
+
+// Toggle save/unsave listing
+router
+  .route("/:listingsId/save")
+  .post(
+    auth(),
+    validate(listingsValidation.getListingsById),
+    listingsController.toggleSaveListing
+  );
+
 // Get listings by vendor user ID
 router
   .route("/vendor/:vendorId")

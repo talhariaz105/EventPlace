@@ -155,6 +155,12 @@ const listingsSchema = new mongoose.Schema<IListingsModal>(
         ref: "EventType",
       },
     ],
+    savedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ],
   },
   {
     timestamps: true,

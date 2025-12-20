@@ -1,0 +1,384 @@
+{
+    "info": {
+        "name": "Listings Save API Collection",
+        "description": "API collection for saving and retrieving saved listings",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Toggle Save/Unsave Listing",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/v1/listings/:listingsId/save",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "v1",
+                        "listings",
+                        ":listingsId",
+                        "save"
+                    ],
+                    "variable": [
+                        {
+                            "key": "listingsId",
+                            "value": "675c1234567890abcdef1234",
+                            "description": "The ID of the listing to save/unsave"
+                        }
+                    ]
+                },
+                "description": "Toggle save/unsave status for a listing. If the listing is not saved, it will be saved. If it's already saved, it will be unsaved."
+            },
+            "response": [
+                {
+                    "name": "Save Listing Success",
+                    "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/listings/:listingsId/save",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "listings",
+                                ":listingsId",
+                                "save"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "listingsId",
+                                    "value": "675c1234567890abcdef1234"
+                                }
+                            ]
+                        }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"message\": \"Listing saved successfully\",\n  \"saved\": true,\n  \"listing\": {\n    \"_id\": \"675c1234567890abcdef1234\",\n    \"name\": \"Elegant Banquet Hall\",\n    \"listingtype\": \"venue\",\n    \"location\": {\n      \"address\": \"123 Main St\",\n      \"city\": \"New York\",\n      \"state\": \"NY\"\n    },\n    \"savedBy\": [\"675c9876543210fedcba9876\"]\n  }\n}"
+                },
+                {
+                    "name": "Unsave Listing Success",
+                    "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/listings/:listingsId/save",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "listings",
+                                ":listingsId",
+                                "save"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "listingsId",
+                                    "value": "675c1234567890abcdef1234"
+                                }
+                            ]
+                        }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"message\": \"Listing unsaved successfully\",\n  \"saved\": false,\n  \"listing\": {\n    \"_id\": \"675c1234567890abcdef1234\",\n    \"name\": \"Elegant Banquet Hall\",\n    \"listingtype\": \"venue\",\n    \"location\": {\n      \"address\": \"123 Main St\",\n      \"city\": \"New York\",\n      \"state\": \"NY\"\n    },\n    \"savedBy\": []\n  }\n}"
+                },
+                {
+                    "name": "Unauthorized",
+                    "originalRequest": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/listings/:listingsId/save",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "listings",
+                                ":listingsId",
+                                "save"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "listingsId",
+                                    "value": "675c1234567890abcdef1234"
+                                }
+                            ]
+                        }
+                    },
+                    "status": "Unauthorized",
+                    "code": 401,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"message\": \"Unauthorized\"\n}"
+                },
+                {
+                    "name": "Listing Not Found",
+                    "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/listings/:listingsId/save",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "listings",
+                                ":listingsId",
+                                "save"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "listingsId",
+                                    "value": "675c0000000000000000000"
+                                }
+                            ]
+                        }
+                    },
+                    "status": "Not Found",
+                    "code": 404,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"message\": \"Listing not found\"\n}"
+                }
+            ]
+        },
+        {
+            "name": "Get Saved Listings",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{accessToken}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/v1/listings/saved?page=1&limit=10",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "v1",
+                        "listings",
+                        "saved"
+                    ],
+                    "query": [
+                        {
+                            "key": "page",
+                            "value": "1",
+                            "description": "Page number for pagination"
+                        },
+                        {
+                            "key": "limit",
+                            "value": "10",
+                            "description": "Number of results per page"
+                        }
+                    ]
+                },
+                "description": "Get all listings saved by the current authenticated user with pagination support."
+            },
+            "response": [
+                {
+                    "name": "Success",
+                    "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/listings/saved?page=1&limit=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "listings",
+                                "saved"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"results\": [\n    {\n      \"_id\": \"675c1234567890abcdef1234\",\n      \"name\": \"Elegant Banquet Hall\",\n      \"listingtype\": \"venue\",\n      \"location\": {\n        \"address\": \"123 Main St\",\n        \"city\": \"New York\",\n        \"state\": \"NY\",\n        \"zipCode\": \"10001\"\n      },\n      \"basePriceRange\": {\n        \"min\": 5000,\n        \"max\": 15000\n      },\n      \"media\": [\n        {\n          \"url\": \"https://example.com/image1.jpg\",\n          \"type\": \"image\"\n        }\n      ],\n      \"logo\": \"https://example.com/logo.jpg\",\n      \"serviceTypeId\": {\n        \"_id\": \"675c1111111111111111111\",\n        \"name\": \"Wedding Venue\"\n      }\n    },\n    {\n      \"_id\": \"675c5678901234567890abcd\",\n      \"name\": \"Professional Catering Service\",\n      \"listingtype\": \"vendor\",\n      \"location\": {\n        \"address\": \"456 Oak Ave\",\n        \"city\": \"Los Angeles\",\n        \"state\": \"CA\",\n        \"zipCode\": \"90001\"\n      },\n      \"basePriceRange\": {\n        \"min\": 2000,\n        \"max\": 8000\n      },\n      \"media\": [\n        {\n          \"url\": \"https://example.com/image2.jpg\",\n          \"type\": \"image\"\n        }\n      ],\n      \"logo\": \"https://example.com/vendor-logo.jpg\",\n      \"serviceTypeId\": {\n        \"_id\": \"675c2222222222222222222\",\n        \"name\": \"Catering\"\n      }\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 10,\n  \"totalPages\": 1,\n  \"totalResults\": 2\n}"
+                },
+                {
+                    "name": "Empty Results",
+                    "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/listings/saved?page=1&limit=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "listings",
+                                "saved"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"results\": [],\n  \"page\": 1,\n  \"limit\": 10,\n  \"totalPages\": 0,\n  \"totalResults\": 0\n}"
+                },
+                {
+                    "name": "Unauthorized",
+                    "originalRequest": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/listings/saved?page=1&limit=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "listings",
+                                "saved"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    },
+                    "status": "Unauthorized",
+                    "code": 401,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\n  \"message\": \"Unauthorized\"\n}"
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:4000",
+            "type": "string"
+        },
+        {
+            "key": "accessToken",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}

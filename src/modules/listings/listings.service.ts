@@ -56,10 +56,9 @@ export const queryVenuesandVendor = async (
   const sortField = sortParts[0];
   const sortOrder = sortParts[1] === "desc" ? -1 : 1;
 
-  console.log("Filter in service...:", filter,listingFilter(filter));
+  console.log("Filter in service...:", filter, listingFilter(filter));
   // Build match stage
   const matchStage: mongoose.FilterQuery<IListingsModal> = {
-  
     isDeleted: false,
     ispublished: true,
     ...listingFilter(filter),
@@ -108,7 +107,6 @@ export const queryVenuesandVendor = async (
             $project: {
               name: 1,
               profilePicture: 1,
-              
             },
           },
         ],
@@ -127,7 +125,7 @@ export const queryVenuesandVendor = async (
         capacity: 1,
         basePriceRange: 1,
         media: 1,
-        logo: 1
+        logo: 1,
       },
     },
     {
@@ -323,6 +321,78 @@ export const getMyListings = async (
     .populate("eventtypes")
     .populate("subcategories")
     .populate("serviceTypeId")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  const totalResults = await ServiceListing.countDocuments(filter);
+  const totalPages = Math.ceil(totalResults / limit);
+
+  return {
+    results: listings,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  };
+};
+
+export const toggleSaveListing = async (
+  listingId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId
+): Promise<any> => {
+  const listing = await ServiceListing.findById(listingId);
+
+  if (!listing) {
+    throw new ApiError("Listing not found", httpStatus.NOT_FOUND);
+  }
+
+  // Initialize savedBy array if not exists
+  if (!listing.savedBy) {
+    listing.savedBy = [];
+  }
+
+  // Work with savedBy as array
+  const savedByArray = listing.savedBy as any[];
+
+  // Check if already saved
+  const isSaved = savedByArray.some(
+    (id: any) => id.toString() === userId.toString()
+  );
+
+  if (isSaved) {
+    // Remove from savedBy by filtering
+    listing.savedBy = savedByArray.filter(
+      (id: any) => id.toString() !== userId.toString()
+    ) as any;
+    await listing.save();
+    return { message: "Listing unsaved successfully", saved: false, listing };
+  } else {
+    // Add to savedBy
+    savedByArray.push(userId);
+    listing.savedBy = savedByArray as any;
+    await listing.save();
+    return { message: "Listing saved successfully", saved: true, listing };
+  }
+};
+
+export const getSavedListingsByUserId = async (
+  userId: mongoose.Types.ObjectId,
+  options: Record<string, any>
+): Promise<any> => {
+  const page = parseInt(options["page"]) || 1;
+  const limit = parseInt(options["limit"]) || 10;
+  const skip = (page - 1) * limit;
+
+  const filter: any = {
+    savedBy: userId,
+    isDeleted: false,
+  };
+
+  const listings = await ServiceListing.find(filter)
+    .select("name listingtype location basePriceRange media logo")
+    .populate("serviceTypeId", "name")
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)

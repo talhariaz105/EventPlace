@@ -120,4 +120,5 @@ export interface IListingsModal extends Document {
   amenties?: ObjectId[] | string[];
   eventTypes?: ObjectId[] | string[];
   priceUnit?: "fixed" | "hourly" | "daily";
+  savedBy?: ObjectId[] | string[];
 }

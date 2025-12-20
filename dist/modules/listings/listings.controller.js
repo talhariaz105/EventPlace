@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMyListings = exports.getAdminListings = exports.deleteListing = exports.updateListing = exports.getListingsByVendorId = exports.getListingById = exports.getVendors = exports.getVenues = exports.createListing = void 0;
+exports.getSavedListings = exports.toggleSaveListing = exports.getMyListings = exports.getAdminListings = exports.deleteListing = exports.updateListing = exports.getListingsByVendorId = exports.getListingById = exports.getVendors = exports.getVenues = exports.createListing = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
@@ -110,5 +110,32 @@ exports.getMyListings = (0, catchAsync_1.default)(async (req, res) => {
     }
     const options = (0, pick_1.default)(req.query, ["limit", "page", "listingtype"]);
     const result = await listingsService.getMyListings(new mongoose_1.default.Types.ObjectId(vendorId), options);
+    res.send(result);
+});
+/**
+ * Toggle save/unsave a listing for the current user
+ */
+exports.toggleSaveListing = (0, catchAsync_1.default)(async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) {
+        res.status(http_status_1.default.UNAUTHORIZED).send({ message: "Unauthorized" });
+        return;
+    }
+    if (typeof req.params["listingsId"] === "string") {
+        const result = await listingsService.toggleSaveListing(new mongoose_1.default.Types.ObjectId(req.params["listingsId"]), new mongoose_1.default.Types.ObjectId(userId));
+        res.send(result);
+    }
+});
+/**
+ * Get saved listings for the current user
+ */
+exports.getSavedListings = (0, catchAsync_1.default)(async (req, res) => {
+    const userId = req.user?.id;
+    if (!userId) {
+        res.status(http_status_1.default.UNAUTHORIZED).send({ message: "Unauthorized" });
+        return;
+    }
+    const options = (0, pick_1.default)(req.query, ["limit", "page"]);
+    const result = await listingsService.getSavedListingsByUserId(new mongoose_1.default.Types.ObjectId(userId), options);
     res.send(result);
 });

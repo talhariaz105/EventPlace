@@ -116,3 +116,42 @@ export const getMyListings = catchAsync(async (req: Request, res: Response) => {
   );
   res.send(result);
 });
+
+/**
+ * Toggle save/unsave a listing for the current user
+ */
+export const toggleSaveListing = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(httpStatus.UNAUTHORIZED).send({ message: "Unauthorized" });
+      return;
+    }
+    if (typeof req.params["listingsId"] === "string") {
+      const result = await listingsService.toggleSaveListing(
+        new mongoose.Types.ObjectId(req.params["listingsId"]),
+        new mongoose.Types.ObjectId(userId)
+      );
+      res.send(result);
+    }
+  }
+);
+
+/**
+ * Get saved listings for the current user
+ */
+export const getSavedListings = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(httpStatus.UNAUTHORIZED).send({ message: "Unauthorized" });
+      return;
+    }
+    const options = pick(req.query, ["limit", "page"]);
+    const result = await listingsService.getSavedListingsByUserId(
+      new mongoose.Types.ObjectId(userId),
+      options
+    );
+    res.send(result);
+  }
+);

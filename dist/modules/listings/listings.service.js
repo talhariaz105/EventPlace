@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMyListings = exports.getAdminListings = exports.deleteListingById = exports.updateListingById = exports.getListingsByVendorId = exports.getListingById = exports.queryVenuesandVendor = exports.createListing = void 0;
+exports.getSavedListingsByUserId = exports.toggleSaveListing = exports.getMyListings = exports.getAdminListings = exports.deleteListingById = exports.updateListingById = exports.getListingsByVendorId = exports.getListingById = exports.queryVenuesandVendor = exports.createListing = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const listings_modal_1 = __importDefault(require("./listings.modal"));
 const listings_venue_1 = __importDefault(require("./listings.venue"));
@@ -113,7 +113,7 @@ const queryVenuesandVendor = async (filter, options) => {
                 capacity: 1,
                 basePriceRange: 1,
                 media: 1,
-                logo: 1
+                logo: 1,
             },
         },
         {
@@ -284,3 +284,57 @@ const getMyListings = async (vendorId, options) => {
     };
 };
 exports.getMyListings = getMyListings;
+const toggleSaveListing = async (listingId, userId) => {
+    const listing = await listings_modal_1.default.findById(listingId);
+    if (!listing) {
+        throw new ApiError_1.default("Listing not found", http_status_1.default.NOT_FOUND);
+    }
+    // Initialize savedBy array if not exists
+    if (!listing.savedBy) {
+        listing.savedBy = [];
+    }
+    // Work with savedBy as array
+    const savedByArray = listing.savedBy;
+    // Check if already saved
+    const isSaved = savedByArray.some((id) => id.toString() === userId.toString());
+    if (isSaved) {
+        // Remove from savedBy by filtering
+        listing.savedBy = savedByArray.filter((id) => id.toString() !== userId.toString());
+        await listing.save();
+        return { message: "Listing unsaved successfully", saved: false, listing };
+    }
+    else {
+        // Add to savedBy
+        savedByArray.push(userId);
+        listing.savedBy = savedByArray;
+        await listing.save();
+        return { message: "Listing saved successfully", saved: true, listing };
+    }
+};
+exports.toggleSaveListing = toggleSaveListing;
+const getSavedListingsByUserId = async (userId, options) => {
+    const page = parseInt(options["page"]) || 1;
+    const limit = parseInt(options["limit"]) || 10;
+    const skip = (page - 1) * limit;
+    const filter = {
+        savedBy: userId,
+        isDeleted: false,
+    };
+    const listings = await listings_modal_1.default.find(filter)
+        .select("name listingtype location basePriceRange media logo")
+        .populate("serviceTypeId", "name")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+    const totalResults = await listings_modal_1.default.countDocuments(filter);
+    const totalPages = Math.ceil(totalResults / limit);
+    return {
+        results: listings,
+        page,
+        limit,
+        totalPages,
+        totalResults,
+    };
+};
+exports.getSavedListingsByUserId = getSavedListingsByUserId;
