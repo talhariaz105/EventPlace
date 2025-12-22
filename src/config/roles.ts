@@ -7,9 +7,32 @@ const allRoles = {
     "subCategory",
     "Amenities",
     "Listings",
+
+    // Booking management
+    "getBooking",
+    "getAllBookings",
+    "updateBooking",
+    "deleteBooking",
+
+    // Review management
+    "manageReviews",
   ],
-  vendor: ["getUsers", "Listings"],
-  customer: ["getUsers"],
+  vendor: ["getUsers", "Listings"
+    // Booking management
+    , "getVendorBookings",
+    "updateBookingStatus",
+    "refundBooking",
+    "handleExtension",
+    "getBookingStats"
+  ],
+  customer: ["getUsers",
+    // Booking management
+    "createBooking",
+    "getCustomerBookings",
+    "cancelBooking",
+    "requestExtension",
+    "getUpcomingBookings"
+  ],
 };
 
 export const roles: string[] = Object.keys(allRoles);

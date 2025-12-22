@@ -8,51 +8,51 @@ const router = express.Router();
 router.post("/check-availability", bookingController.checkAvailability);
 
 // Customer routes
-router.post("/", auth("customer"), bookingController.createBooking);
+router.post("/", auth("createBooking"), bookingController.createBooking);
 router.get(
   "/my-bookings",
-  auth("customer"),
+  auth("getCustomerBookings"),
   bookingController.getCustomerBookings
 );
-router.patch("/:id/cancel", auth("customer"), bookingController.cancelBooking);
+router.patch("/:id/cancel", auth("cancelBooking"), bookingController.cancelBooking);
 router.post(
   "/:id/extend",
-  auth("customer"),
+  auth("requestExtension"),
   bookingController.requestExtension
 );
 router.get(
   "/upcoming",
-  auth("customer", "vendor"),
+  auth("getUpcomingBookings"),
   bookingController.getUpcomingBookings
 );
 
 // Vendor routes
 router.get(
   "/vendor/bookings",
-  auth("vendor"),
+  auth("getVendorBookings"),
   bookingController.getVendorBookings
 );
 router.patch(
   "/:id/status",
-  auth("vendor"),
+  auth("updateBookingStatus"),
   bookingController.updateBookingStatus
 );
-router.post("/:id/refund", auth("vendor"), bookingController.refundBooking);
+router.post("/:id/refund", auth("refundBooking"), bookingController.refundBooking);
 router.post(
   "/:id/extension",
-  auth("vendor"),
+  auth("handleExtension"),
   bookingController.handleExtension
 );
-router.get("/vendor/stats", auth("vendor"), bookingController.getBookingStats);
+router.get("/vendor/stats", auth("getBookingStats"), bookingController.getBookingStats);
 
 // Admin routes
 router.get("/", auth("admin"), bookingController.getAllBookings);
 router.get(
   "/:id",
-  auth("admin", "vendor", "customer"),
+  auth("getBooking"),
   bookingController.getBooking
 );
-router.patch("/:id", auth("admin"), bookingController.updateBooking);
-router.delete("/:id", auth("admin"), bookingController.deleteBooking);
+router.patch("/:id", auth("updateBooking"), bookingController.updateBooking);
+router.delete("/:id", auth("deleteBooking"), bookingController.deleteBooking);
 
 export default router;
