@@ -23,6 +23,14 @@ dayjs_1.default.extend(isSameOrBefore_1.default);
  * Calculate booking price based on pricing model (hourly/daily) and service days
  */
 const calculateBookingPrice = (pricingModel, checkInTime, checkOutTime, serviceDays, packages = [], serviceTimezone = "UTC") => {
+    console.log("Calculating price with", {
+        pricingModel,
+        checkInTime,
+        checkOutTime,
+        serviceDays,
+        packages,
+        serviceTimezone,
+    });
     if (!pricingModel ||
         !checkInTime ||
         !checkOutTime ||
@@ -40,8 +48,8 @@ const calculateBookingPrice = (pricingModel, checkInTime, checkOutTime, serviceD
     const endDay = end.endOf("day");
     // Calculate service days price
     while (current.isSameOrBefore(endDay)) {
-        const dayName = current.format("dddd").toLowerCase();
-        const dayInfo = serviceDays.find((sd) => sd.day === dayName);
+        const dayName = current.format("dddd");
+        const dayInfo = serviceDays.find((sd) => sd.day.toLowerCase() === dayName.toLowerCase());
         if (dayInfo && dayInfo.price) {
             const dayPrice = Number(dayInfo.price) || 0;
             const dayDateStr = current.format("YYYY-MM-DD");
@@ -90,8 +98,8 @@ const calculateBookingPrice = (pricingModel, checkInTime, checkOutTime, serviceD
             let packageHours = 0;
             let packageDays = 0;
             while (packageCurrent.isSameOrBefore(endDay)) {
-                const dayName = packageCurrent.format("dddd").toLowerCase();
-                const dayInfo = serviceDays.find((sd) => sd.day === dayName);
+                const dayName = packageCurrent.format("dddd");
+                const dayInfo = serviceDays.find((sd) => sd.day.toLowerCase() === dayName.toLowerCase());
                 if (dayInfo && dayInfo.price) {
                     const dayDateStr = packageCurrent.format("YYYY-MM-DD");
                     let serviceStart = dayjs_1.default.tz(`${dayDateStr} ${dayInfo.startTime}`, serviceTimezone);
@@ -533,6 +541,7 @@ const createBooking = async (params) => {
     })) || [];
     const calculatedPrice = (0, exports.calculateBookingPrice)("daily", // Assuming daily pricing model; adjust as needed
     checkIn, checkOut, findService.serviceDays, filterPakages, findService.timeZone);
+    console.log("Calculated Price:", calculatedPrice);
     // Calculate total amount
     let totalAmount = calculatedPrice;
     // let discountAmount = 0;
@@ -544,6 +553,9 @@ const createBooking = async (params) => {
     //   customerId,
     //   paymentMethodId,
     // });
+    if (totalAmount <= 0) {
+        throw new errors_1.ApiError("Total amount must be greater than zero", http_status_1.default.BAD_REQUEST);
+    }
     // Create booking
     const booking = await bookings_modal_1.Booking.create({
         user: customerId,
@@ -551,7 +563,7 @@ const createBooking = async (params) => {
         checkIn,
         checkOut,
         guests,
-        totalAmount,
+        totalPrice: totalAmount,
         status: "pending",
         message,
         packages: packages,
@@ -736,13 +748,14 @@ const checkAvailability = async (params) => {
     const query = {
         service: serviceId,
         isDeleted: false,
-        status: { $in: ["pending", "confirmed"] },
-        $or: [{ checkIn: { $lt: checkOut }, checkOut: { $gt: checkIn } }],
+        status: { $in: ["pending", "booked"] },
+        $or: [{ checkIn: { $lte: checkOut }, checkOut: { $gte: checkIn } }],
     };
     if (excludeBookingId) {
         query._id = { $ne: excludeBookingId };
     }
     const conflictingBookings = await bookings_modal_1.Booking.find(query);
+    console.log("conflictingBookings", conflictingBookings);
     return conflictingBookings.length === 0;
 };
 exports.checkAvailability = checkAvailability;

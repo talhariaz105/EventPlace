@@ -1,9 +1,9 @@
 import Joi from "joi";
 
 const createBooking = Joi.object({
-  service: Joi.string().required().messages({
-    "string.empty": "Service ID is required",
-    "any.required": "Service ID is required",
+  serviceId: Joi.string().required().messages({
+    "string.empty": "serviceId is required",
+    "any.required": "serviceId is required",
   }),
   checkIn: Joi.date().required().messages({
     "date.base": "Valid check-in date is required",
@@ -19,21 +19,15 @@ const createBooking = Joi.object({
     "number.min": "At least one guest is required",
     "any.required": "Number of guests is required",
   }),
-  paymentMethodid: Joi.string().required().messages({
-    "string.empty": "Payment method is required",
-    "any.required": "Payment method is required",
-  }),
   message: Joi.string().optional().allow(""),
-  couponCode: Joi.string().optional().allow(""),
-  addOnServices: Joi.array()
-    .items(
-      Joi.object({
-        name: Joi.string().optional(),
-        price: Joi.number().required(),
-      })
-    )
-    .optional(),
   timezone: Joi.string().optional(),
+  totalAmount: Joi.number().min(0).required().messages({
+    "number.base": "Total amount must be a number",
+    "number.min": "Total amount must be positive",
+    "any.required": "Total amount is required",
+  }),
+  packages: Joi.array().items(Joi.string()).optional(),
+  type: Joi.string().valid("private", "public").optional()
 });
 
 const updateBookingStatus = Joi.object({

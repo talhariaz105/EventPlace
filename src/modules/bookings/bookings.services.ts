@@ -45,6 +45,14 @@ export const calculateBookingPrice = (
   }> = [],
   serviceTimezone: string = "UTC"
 ): number => {
+  console.log("Calculating price with", {
+    pricingModel,
+    checkInTime,
+    checkOutTime,
+    serviceDays,
+    packages,
+    serviceTimezone,
+  });
   if (
     !pricingModel ||
     !checkInTime ||
@@ -68,8 +76,10 @@ export const calculateBookingPrice = (
 
   // Calculate service days price
   while (current.isSameOrBefore(endDay)) {
-    const dayName = current.format("dddd").toLowerCase();
-    const dayInfo = serviceDays.find((sd) => sd.day === dayName);
+    const dayName = current.format("dddd");
+    const dayInfo = serviceDays.find(
+      (sd) => sd.day.toLowerCase() === dayName.toLowerCase()
+    );
 
     if (dayInfo && dayInfo.price) {
       const dayPrice = Number(dayInfo.price) || 0;
@@ -91,6 +101,14 @@ export const calculateBookingPrice = (
       const checkInLocal = start;
       const checkOutLocal = end;
 
+      console.log(
+        `Day: ${dayName}, Service: ${serviceStart.format(
+          "HH:mm"
+        )}-${serviceEnd.format("HH:mm")}, Booking: ${checkInLocal.format(
+          "HH:mm"
+        )}-${checkOutLocal.format("HH:mm")} (${serviceTimezone})`
+      );
+
       if (pricingModel === "hourly") {
         if (
           checkOutLocal.isAfter(serviceStart) &&
@@ -106,7 +124,14 @@ export const calculateBookingPrice = (
           if (actualEnd.isAfter(actualStart)) {
             const hours = dayjs.duration(actualEnd.diff(actualStart)).asHours();
             totalPrice += hours * dayPrice;
+            console.log(
+              `  ✓ Hourly: ${hours.toFixed(2)} hours × $${dayPrice} = $${(
+                hours * dayPrice
+              ).toFixed(2)}`
+            );
           }
+        } else {
+          console.log(`  ✗ No overlap with service hours`);
         }
       } else if (pricingModel === "daily") {
         if (
@@ -114,6 +139,9 @@ export const calculateBookingPrice = (
           checkOutLocal.isAfter(serviceStart)
         ) {
           totalPrice += dayPrice;
+          console.log(`  ✓ Daily: $${dayPrice}`);
+        } else {
+          console.log(`  ✗ No overlap with service hours`);
         }
       }
     }
@@ -137,8 +165,10 @@ export const calculateBookingPrice = (
       let packageDays = 0;
 
       while (packageCurrent.isSameOrBefore(endDay)) {
-        const dayName = packageCurrent.format("dddd").toLowerCase();
-        const dayInfo = serviceDays.find((sd) => sd.day === dayName);
+        const dayName = packageCurrent.format("dddd");
+        const dayInfo = serviceDays.find(
+          (sd) => sd.day.toLowerCase() === dayName.toLowerCase()
+        );
 
         if (dayInfo && dayInfo.price) {
           const dayDateStr = packageCurrent.format("YYYY-MM-DD");
@@ -701,6 +731,7 @@ export const createBooking = async (params: ICreateBookingParams) => {
     filterPakages,
     findService.timeZone
   );
+  console.log("Calculated Price:", calculatedPrice);
 
   // Calculate total amount
   let totalAmount = calculatedPrice;
@@ -714,6 +745,12 @@ export const createBooking = async (params: ICreateBookingParams) => {
   //   customerId,
   //   paymentMethodId,
   // });
+  if (totalAmount <= 0) {
+    throw new ApiError(
+      "Total amount must be greater than zero",
+      httpStatus.BAD_REQUEST
+    );
+  }
 
   // Create booking
   const booking = await Booking.create({
@@ -722,7 +759,7 @@ export const createBooking = async (params: ICreateBookingParams) => {
     checkIn,
     checkOut,
     guests,
-    totalAmount,
+    totalPrice: totalAmount,
     status: "pending",
     message,
     packages: packages,
@@ -982,8 +1019,8 @@ export const checkAvailability = async (
   const query: any = {
     service: serviceId,
     isDeleted: false,
-    status: { $in: ["pending", "confirmed"] },
-    $or: [{ checkIn: { $lt: checkOut }, checkOut: { $gt: checkIn } }],
+    status: { $in: ["pending", "booked"] },
+    $or: [{ checkIn: { $lte: checkOut }, checkOut: { $gte: checkIn } }],
   };
 
   if (excludeBookingId) {
@@ -991,6 +1028,7 @@ export const checkAvailability = async (
   }
 
   const conflictingBookings = await Booking.find(query);
+  console.log("conflictingBookings", conflictingBookings);
 
   return conflictingBookings.length === 0;
 };

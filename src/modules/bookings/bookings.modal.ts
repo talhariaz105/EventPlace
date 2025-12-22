@@ -40,7 +40,6 @@ const BookingSchema = new Schema<IBooking>(
     },
     totalAmount: {
       type: Number,
-      required: true,
       min: [0, "Total amount must be positive"],
     },
     paymentStatus: {
@@ -54,7 +53,6 @@ const BookingSchema = new Schema<IBooking>(
     },
     paymentIntentId: {
       type: String,
-      required: true,
       trim: true,
     },
     isDeleted: {

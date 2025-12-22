@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookingValidation = void 0;
 const joi_1 = __importDefault(require("joi"));
 const createBooking = joi_1.default.object({
-    service: joi_1.default.string().required().messages({
-        "string.empty": "Service ID is required",
-        "any.required": "Service ID is required",
+    serviceId: joi_1.default.string().required().messages({
+        "string.empty": "serviceId is required",
+        "any.required": "serviceId is required",
     }),
     checkIn: joi_1.default.date().required().messages({
         "date.base": "Valid check-in date is required",
@@ -24,19 +24,15 @@ const createBooking = joi_1.default.object({
         "number.min": "At least one guest is required",
         "any.required": "Number of guests is required",
     }),
-    paymentMethodid: joi_1.default.string().required().messages({
-        "string.empty": "Payment method is required",
-        "any.required": "Payment method is required",
-    }),
     message: joi_1.default.string().optional().allow(""),
-    couponCode: joi_1.default.string().optional().allow(""),
-    addOnServices: joi_1.default.array()
-        .items(joi_1.default.object({
-        name: joi_1.default.string().optional(),
-        price: joi_1.default.number().required(),
-    }))
-        .optional(),
     timezone: joi_1.default.string().optional(),
+    totalAmount: joi_1.default.number().min(0).required().messages({
+        "number.base": "Total amount must be a number",
+        "number.min": "Total amount must be positive",
+        "any.required": "Total amount is required",
+    }),
+    packages: joi_1.default.array().items(joi_1.default.string()).optional(),
+    type: joi_1.default.string().valid("private", "public").optional()
 });
 const updateBookingStatus = joi_1.default.object({
     status: joi_1.default.string().valid("booked", "rejected").required().messages({
