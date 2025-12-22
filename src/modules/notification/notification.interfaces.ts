@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 export interface IGetUserNotificationsParams {
   userId: string | mongoose.Types.ObjectId;
@@ -13,21 +13,21 @@ export interface IGetUserUnreadNotificationsParams {
 
 export interface IReadUserNotificationsParams {
   userId: string | mongoose.Types.ObjectId;
-  accountId: string | mongoose.Types.ObjectId;
+  accountId?: string | mongoose.Types.ObjectId;
 }
 
 export interface ICreateNotificationParams {
   userId: string | mongoose.Types.ObjectId;
   title: string;
   message: string;
-  type: 'serviceListing' | 'booking' | 'user' | 'review' | 'message' | 'payout' | 'task';
-  accountId?: string | mongoose.Types.ObjectId;
+  type: "message" | "task" | "library" | "user" | "assessment" | "audit";
   subId?: string | mongoose.Types.ObjectId;
   forId?: string | mongoose.Types.ObjectId;
   notificationFor?: string;
   sendEmailNotification?: boolean;
   link?: string;
   key?: string;
+  accountId?: string | mongoose.Types.ObjectId;
 }
 
 export interface INotificationResponse {

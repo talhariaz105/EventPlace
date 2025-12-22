@@ -1,24 +1,22 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface INotification extends Document {
   userId: mongoose.Types.ObjectId;
   title: string;
   message: string;
-  type: 'serviceListing' | 'booking' | 'user' | 'review' | 'message' | 'payout';
+  type: "message" | "task" | "booking";
   isRead: boolean;
-  isDelivered: boolean;
   createdAt: Date;
-  accountId?: mongoose.Types.ObjectId;
   notificationFor?: string;
-  forId?: mongoose.Types.ObjectId;  
+  forId?: mongoose.Types.ObjectId;
   link?: string;
-  subId?: mongoose.Types.ObjectId;
+ 
 }
 
 const notificationSchema = new Schema<INotification>({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
     index: true,
   },
@@ -27,11 +25,7 @@ const notificationSchema = new Schema<INotification>({
   },
   forId: {
     type: Schema.Types.ObjectId,
-    refPath: 'notificationFor',
-  },
-  accountId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Account',
+    refPath: "notificationFor",
   },
   title: {
     type: String,
@@ -43,10 +37,10 @@ const notificationSchema = new Schema<INotification>({
   },
   type: {
     type: String,
-    enum: ['message', 'task','library','user','assessment','audit'],
+    enum: ["message", "booking"],
     required: true,
   },
-  link:{
+  link: {
     type: String,
   },
   isRead: {
@@ -56,18 +50,16 @@ const notificationSchema = new Schema<INotification>({
   createdAt: {
     type: Date,
     default: Date.now,
-  },
-  subId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-  },
-
+  }
 });
 
 // Add index for better query performance
 notificationSchema.index({ userId: 1, createdAt: -1 });
 notificationSchema.index({ userId: 1, isRead: 1 });
 
-const Notification = mongoose.model<INotification>('Notification', notificationSchema);
+const Notification = mongoose.model<INotification>(
+  "Notification",
+  notificationSchema
+);
 
 export default Notification;

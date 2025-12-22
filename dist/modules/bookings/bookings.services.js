@@ -3,12 +3,217 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUpcomingBookings = exports.getBookingStats = exports.checkAvailability = exports.extensionAction = exports.extendBooking = exports.refundAmount = exports.cancelBooking = exports.updateBookingRequestStatus = exports.createBooking = exports.deleteBooking = exports.updateBooking = exports.getAllBookingsForCustomer = exports.getAllBookingsForVendor = exports.getAllBookings = exports.getBookingById = void 0;
+exports.getUpcomingBookings = exports.getBookingStats = exports.checkAvailability = exports.extensionAction = exports.extendBooking = exports.refundAmount = exports.cancelBooking = exports.updateBookingRequestStatus = exports.createBooking = exports.deleteBooking = exports.updateBooking = exports.getAllBookingsForCustomer = exports.getAllBookingsForVendor = exports.getAllBookings = exports.getBookingById = exports.checkBufferTimeAvailability = exports.calculateBookingPrice = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const http_status_1 = __importDefault(require("http-status"));
+const dayjs_1 = __importDefault(require("dayjs"));
+const utc_1 = __importDefault(require("dayjs/plugin/utc"));
+const timezone_1 = __importDefault(require("dayjs/plugin/timezone"));
+const duration_1 = __importDefault(require("dayjs/plugin/duration"));
+const isSameOrBefore_1 = __importDefault(require("dayjs/plugin/isSameOrBefore"));
 const bookings_modal_1 = require("./bookings.modal");
 const errors_1 = require("../errors");
 const stripe_1 = require("../stripe");
+const listings_1 = require("../listings");
+dayjs_1.default.extend(utc_1.default);
+dayjs_1.default.extend(timezone_1.default);
+dayjs_1.default.extend(duration_1.default);
+dayjs_1.default.extend(isSameOrBefore_1.default);
+/**
+ * Calculate booking price based on pricing model (hourly/daily) and service days
+ */
+const calculateBookingPrice = (pricingModel, checkInTime, checkOutTime, serviceDays, packages = [], serviceTimezone = "UTC") => {
+    if (!pricingModel ||
+        !checkInTime ||
+        !checkOutTime ||
+        !Array.isArray(serviceDays) ||
+        serviceDays.length === 0) {
+        return 0;
+    }
+    console.log("TimeZone", serviceTimezone);
+    const start = dayjs_1.default.utc(checkInTime).tz(serviceTimezone);
+    const end = dayjs_1.default.utc(checkOutTime).tz(serviceTimezone);
+    if (!end.isAfter(start))
+        return 0;
+    let totalPrice = 0;
+    let current = start.startOf("day");
+    const endDay = end.endOf("day");
+    // Calculate service days price
+    while (current.isSameOrBefore(endDay)) {
+        const dayName = current.format("dddd").toLowerCase();
+        const dayInfo = serviceDays.find((sd) => sd.day === dayName);
+        if (dayInfo && dayInfo.price) {
+            const dayPrice = Number(dayInfo.price) || 0;
+            const dayDateStr = current.format("YYYY-MM-DD");
+            let serviceStart = dayjs_1.default.tz(`${dayDateStr} ${dayInfo.startTime}`, serviceTimezone);
+            let serviceEnd = dayjs_1.default.tz(`${dayDateStr} ${dayInfo.endTime}`, serviceTimezone);
+            if (serviceEnd.isBefore(serviceStart)) {
+                serviceEnd = serviceEnd.add(1, "day"); // overnight
+            }
+            const checkInLocal = start;
+            const checkOutLocal = end;
+            if (pricingModel === "hourly") {
+                if (checkOutLocal.isAfter(serviceStart) &&
+                    checkInLocal.isBefore(serviceEnd)) {
+                    const actualStart = checkInLocal.isAfter(serviceStart)
+                        ? checkInLocal
+                        : serviceStart;
+                    const actualEnd = checkOutLocal.isBefore(serviceEnd)
+                        ? checkOutLocal
+                        : serviceEnd;
+                    if (actualEnd.isAfter(actualStart)) {
+                        const hours = dayjs_1.default.duration(actualEnd.diff(actualStart)).asHours();
+                        totalPrice += hours * dayPrice;
+                    }
+                }
+            }
+            else if (pricingModel === "daily") {
+                if (checkInLocal.isBefore(serviceEnd) &&
+                    checkOutLocal.isAfter(serviceStart)) {
+                    totalPrice += dayPrice;
+                }
+            }
+        }
+        current = current.add(1, "day");
+    }
+    // Calculate packages price based on their priceUnit and service days
+    let packagesTotalPrice = 0;
+    packages.forEach((pkg) => {
+        const packagePrice = Number(pkg.price) || 0;
+        if (pkg.priceUnit === "fixed") {
+            // Fixed price - add once
+            packagesTotalPrice += packagePrice;
+        }
+        else if (pkg.priceUnit === "hourly" || pkg.priceUnit === "daily") {
+            // Calculate based on service days availability
+            let packageCurrent = start.startOf("day");
+            let packageHours = 0;
+            let packageDays = 0;
+            while (packageCurrent.isSameOrBefore(endDay)) {
+                const dayName = packageCurrent.format("dddd").toLowerCase();
+                const dayInfo = serviceDays.find((sd) => sd.day === dayName);
+                if (dayInfo && dayInfo.price) {
+                    const dayDateStr = packageCurrent.format("YYYY-MM-DD");
+                    let serviceStart = dayjs_1.default.tz(`${dayDateStr} ${dayInfo.startTime}`, serviceTimezone);
+                    let serviceEnd = dayjs_1.default.tz(`${dayDateStr} ${dayInfo.endTime}`, serviceTimezone);
+                    if (serviceEnd.isBefore(serviceStart)) {
+                        serviceEnd = serviceEnd.add(1, "day");
+                    }
+                    const checkInLocal = start;
+                    const checkOutLocal = end;
+                    // Check if booking overlaps with this service day
+                    if (checkOutLocal.isAfter(serviceStart) &&
+                        checkInLocal.isBefore(serviceEnd)) {
+                        const actualStart = checkInLocal.isAfter(serviceStart)
+                            ? checkInLocal
+                            : serviceStart;
+                        const actualEnd = checkOutLocal.isBefore(serviceEnd)
+                            ? checkOutLocal
+                            : serviceEnd;
+                        if (actualEnd.isAfter(actualStart)) {
+                            if (pkg.priceUnit === "hourly") {
+                                const hours = dayjs_1.default
+                                    .duration(actualEnd.diff(actualStart))
+                                    .asHours();
+                                packageHours += hours;
+                            }
+                            else if (pkg.priceUnit === "daily") {
+                                packageDays += 1;
+                            }
+                        }
+                    }
+                }
+                packageCurrent = packageCurrent.add(1, "day");
+            }
+            if (pkg.priceUnit === "hourly") {
+                packagesTotalPrice += packagePrice * packageHours;
+            }
+            else if (pkg.priceUnit === "daily") {
+                packagesTotalPrice += packagePrice * packageDays;
+            }
+        }
+    });
+    return parseFloat((totalPrice + packagesTotalPrice).toFixed(2));
+};
+exports.calculateBookingPrice = calculateBookingPrice;
+/**
+ * Check buffer time availability for bookings
+ */
+const checkBufferTimeAvailability = async (checkInTime, checkOutTime, serviceId, bufferTime = 0, bufferTimeUnit = "minutes", durationUnit = "hours", minimumDuration = 0, timezone = "UTC", bookingId) => {
+    try {
+        // Convert buffer time to minutes for consistent calculation
+        let bufferInMinutes = bufferTime;
+        if (bufferTimeUnit === "hours") {
+            bufferInMinutes = bufferTime * 60;
+        }
+        // Convert minimum duration to minutes based on unit
+        let minDurationInMinutes = minimumDuration;
+        if (durationUnit === "days") {
+            minDurationInMinutes = minimumDuration * 24 * 60;
+        }
+        else if (durationUnit === "hours") {
+            minDurationInMinutes = minimumDuration * 60;
+        }
+        const checkIn = new Date(checkInTime);
+        const checkOut = new Date(checkOutTime);
+        // Check if proposed booking duration meets minimum requirement
+        const bookingDurationMinutes = (checkOut.getTime() - checkIn.getTime()) / (1000 * 60);
+        if (minimumDuration > 0 && bookingDurationMinutes < minDurationInMinutes) {
+            return {
+                available: false,
+                conflictingBooking: null,
+                reason: `Booking duration must be at least ${minimumDuration} ${durationUnit}`,
+            };
+        }
+        // Find only overlapping bookings for this service with the proposed dates
+        const query = {
+            service: serviceId,
+            status: { $in: ["booked", "pending"] },
+            isDeleted: false,
+            checkIn: {
+                $lt: new Date(checkOut.getTime() + bufferInMinutes * 60 * 1000),
+            },
+            checkOut: {
+                $gt: new Date(checkIn.getTime() - bufferInMinutes * 60 * 1000),
+            },
+        };
+        if (bookingId) {
+            query._id = { $ne: bookingId }; // Exclude current booking if checking for extension
+        }
+        const conflictingBookings = await bookings_modal_1.Booking.findOne(query);
+        console.log("conflictingBookings", conflictingBookings, "checkIn", new Date(checkIn.getTime() - bufferInMinutes * 60 * 1000));
+        if (!conflictingBookings) {
+            return { available: true, conflictingBooking: null, reason: null };
+        }
+        // Apply buffer time to check if new booking fits with existing booking
+        const existingCheckOut = new Date(conflictingBookings.checkOut);
+        const bufferEndTime = new Date(existingCheckOut.getTime() + bufferInMinutes * 60 * 1000);
+        const existingCheckIn = new Date(conflictingBookings.checkIn);
+        const bufferStartTime = new Date(existingCheckIn.getTime() - bufferInMinutes * 60 * 1000);
+        // Convert times to local timezone for user-friendly messages
+        const bufferEndTimeLocal = (0, dayjs_1.default)(bufferEndTime)
+            .tz(timezone)
+            .format("YYYY-MM-DD HH:mm:ss");
+        // Check if new booking overlaps with buffer zones
+        if (checkOut > bufferStartTime && checkIn < bufferEndTime) {
+            return {
+                available: false,
+                conflictingBooking: {
+                    checkIn: conflictingBookings.checkIn,
+                    checkOut: conflictingBookings.checkOut,
+                    bufferStartTime,
+                    bufferEndTime,
+                },
+                reason: `Service is not available. Previous booking ends at ${bufferEndTimeLocal} (${timezone}). Next available time after buffer: ${bufferEndTimeLocal} (${timezone})`,
+            };
+        }
+        return { available: true, conflictingBooking: null, reason: null };
+    }
+    catch (error) {
+        throw new Error(`Buffer time availability check failed: ${error.message}`);
+    }
+};
+exports.checkBufferTimeAvailability = checkBufferTimeAvailability;
 /**
  * Filter builder for booking queries
  */
@@ -305,7 +510,7 @@ exports.deleteBooking = deleteBooking;
  * Create new booking with payment
  */
 const createBooking = async (params) => {
-    const { customerId, serviceId, checkIn, checkOut, guests, couponCode, paymentMethodId, } = params;
+    const { customerId, serviceId, checkIn, checkOut, guests, message, type, packages, } = params;
     // Check availability
     const isAvailable = await (0, exports.checkAvailability)({
         serviceId,
@@ -315,30 +520,30 @@ const createBooking = async (params) => {
     if (!isAvailable) {
         throw new errors_1.ApiError("Service is not available for the selected dates", http_status_1.default.BAD_REQUEST);
     }
-    // Calculate total amount
-    let totalAmount = params.totalAmount;
-    let discountAmount = 0;
-    let couponId;
-    if (couponCode) {
-        const coupon = await stripe_1.stripeCoupon.verifyCoupon({ couponCode });
-        if (coupon && coupon.valid) {
-            if (coupon.percent_off) {
-                discountAmount = (totalAmount * coupon.percent_off) / 100;
-            }
-            else if (coupon.amount_off) {
-                discountAmount = coupon.amount_off / 100; // Stripe amounts are in cents
-            }
-            totalAmount -= discountAmount;
-            couponId = coupon.id;
-        }
+    const findService = await listings_1.ServiceListing.findById(serviceId);
+    if (!findService) {
+        throw new errors_1.ApiError("Service not found", http_status_1.default.NOT_FOUND);
     }
-    // Create payment intent
-    const paymentIntent = await stripe_1.stripePayment.createPaymentIntent({
-        amount: Math.round(totalAmount * 100),
-        currency: "usd",
-        customerId,
-        paymentMethodId,
-    });
+    const filterPakages = findService.packeges
+        ?.filter((pkg) => packages?.includes(pkg._id.toString()))
+        .map((pkg) => ({
+        name: pkg.name.toString(),
+        price: Number(pkg.price) || 0,
+        priceUnit: pkg.priceUnit || "fixed",
+    })) || [];
+    const calculatedPrice = (0, exports.calculateBookingPrice)("daily", // Assuming daily pricing model; adjust as needed
+    checkIn, checkOut, findService.serviceDays, filterPakages, findService.timeZone);
+    // Calculate total amount
+    let totalAmount = calculatedPrice;
+    // let discountAmount = 0;
+    // let couponId;
+    // // Create payment intent
+    // const paymentIntent = await stripePayment.createPaymentIntent({
+    //   amount: Math.round(totalAmount * 100), // Convert to cents
+    //   currency: "usd",
+    //   customerId,
+    //   paymentMethodId,
+    // });
     // Create booking
     const booking = await bookings_modal_1.Booking.create({
         user: customerId,
@@ -347,10 +552,10 @@ const createBooking = async (params) => {
         checkOut,
         guests,
         totalAmount,
-        discountAmount,
-        couponCode: couponId,
-        paymentIntentId: paymentIntent.id,
         status: "pending",
+        message,
+        packages: packages,
+        type,
     });
     return booking;
 };

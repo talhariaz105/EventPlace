@@ -20,8 +20,6 @@ export interface IBooking extends Document {
   guests: number;
   totalPrice: number;
   totalAmount: number;
-  discountAmount?: number;
-  couponCode?: string;
   paymentStatus: boolean;
   paymentIntentId: string;
   status: "pending" | "booked" | "canceled" | "completed" | "rejected";
@@ -39,6 +37,8 @@ export interface IBooking extends Document {
   extensionDetails?: IExtensionDetails;
   servicePrice: IServicePrice[];
   message?: string;
+  type?: "private" | "public";
+  packages?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,11 +50,11 @@ export interface ICreateBookingParams {
   checkOut: Date;
   guests: number;
   totalAmount: number;
-  paymentMethodId: string;
   message?: string;
-  couponCode?: string;
   addOnServices?: IServicePrice[];
   timezone?: string;
+  type?: "private" | "public";
+  packages?: string[];
 }
 
 export interface IUpdateBookingStatusParams {

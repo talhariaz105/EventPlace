@@ -15,6 +15,10 @@ const BookingSchema = new mongoose_1.Schema({
         required: true,
         index: true,
     },
+    type: {
+        type: String,
+        enum: ["private", "public"],
+    },
     checkIn: {
         type: Date,
         required: true,
@@ -39,27 +43,19 @@ const BookingSchema = new mongoose_1.Schema({
         required: true,
         min: [0, "Total amount must be positive"],
     },
-    discountAmount: {
-        type: Number,
-        default: 0,
-    },
-    couponCode: {
-        type: String,
-        trim: true,
-    },
     paymentStatus: {
         type: Boolean,
         default: false,
-    },
-    paymentIntentId: {
-        type: String,
-        trim: true,
-        required: true,
     },
     status: {
         type: String,
         enum: ["pending", "booked", "canceled", "completed", "rejected"],
         default: "pending",
+    },
+    paymentIntentId: {
+        type: String,
+        required: true,
+        trim: true,
     },
     isDeleted: {
         type: Boolean,
@@ -95,6 +91,10 @@ const BookingSchema = new mongoose_1.Schema({
         type: String,
         enum: ["Full", "Partial"],
     },
+    message: {
+        type: String,
+        trim: true,
+    },
     refundId: {
         type: String,
         trim: true,
@@ -112,16 +112,8 @@ const BookingSchema = new mongoose_1.Schema({
         },
         paymentIntentId: String,
     },
-    servicePrice: [
-        {
-            name: {
-                type: String,
-            },
-            price: {
-                type: Number,
-                required: true,
-            },
-        },
+    packages: [
+        String
     ],
 }, { timestamps: true });
 // Index for sorting and filtering bookings efficiently

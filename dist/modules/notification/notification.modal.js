@@ -23,7 +23,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const notificationSchema = new mongoose_1.Schema({
     userId: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: "User",
         required: true,
         index: true,
     },
@@ -32,11 +32,7 @@ const notificationSchema = new mongoose_1.Schema({
     },
     forId: {
         type: mongoose_1.Schema.Types.ObjectId,
-        refPath: 'notificationFor',
-    },
-    accountId: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'Account',
+        refPath: "notificationFor",
     },
     title: {
         type: String,
@@ -48,7 +44,7 @@ const notificationSchema = new mongoose_1.Schema({
     },
     type: {
         type: String,
-        enum: ['message', 'task', 'library', 'user', 'assessment', 'audit'],
+        enum: ["message", "booking"],
         required: true,
     },
     link: {
@@ -61,14 +57,10 @@ const notificationSchema = new mongoose_1.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-    },
-    subId: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'User',
-    },
+    }
 });
 // Add index for better query performance
 notificationSchema.index({ userId: 1, createdAt: -1 });
 notificationSchema.index({ userId: 1, isRead: 1 });
-const Notification = mongoose_1.default.model('Notification', notificationSchema);
+const Notification = mongoose_1.default.model("Notification", notificationSchema);
 exports.default = Notification;

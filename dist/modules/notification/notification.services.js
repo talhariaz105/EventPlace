@@ -22,22 +22,22 @@ const createNotification = async (params, workspaceId, key) => {
                 console.log(`Notification is disabled for workspace: ${workspaceId}, key: ${key}`);
                 return {
                     success: false,
-                    message: 'Notification is disabled for this workspace.',
+                    message: "Notification is disabled for this workspace.",
                 };
             }
         }
-        const { userId, title, message, type, accountId, notificationFor, forId, sendEmailNotification = false, link } = params;
+        const { userId, title, message, type, notificationFor, forId, sendEmailNotification = false, link, } = params;
         // Convert userId to ObjectId if it's a string
-        const userObjectId = typeof userId === 'string' ? new mongoose_1.default.Types.ObjectId(userId) : userId;
+        const userObjectId = typeof userId === "string" ? new mongoose_1.default.Types.ObjectId(userId) : userId;
         const notification = new notification_modal_1.default({
             userId: userObjectId,
             title,
             message,
             type,
-            accountId: accountId,
-            subId: params.subId ? new mongoose_1.default.Types.ObjectId(params.subId) : undefined,
+            subId: params.subId
+                ? new mongoose_1.default.Types.ObjectId(params.subId)
+                : undefined,
             isRead: false,
-            isDelivered: false,
             notificationFor,
             forId,
             link,
@@ -47,7 +47,7 @@ const createNotification = async (params, workspaceId, key) => {
         // Emit notification to user via socket if they are connected
         const io = (0, socket_initialize_1.getSocketInstance)();
         if (io) {
-            io.to(userObjectId?.toString()).emit('new-notification', {
+            io.to(userObjectId?.toString()).emit("new-notification", {
                 success: true,
                 notification: notification.toObject(),
             });
@@ -55,7 +55,7 @@ const createNotification = async (params, workspaceId, key) => {
         // Send email notification if requested
         if (sendEmailNotification) {
             try {
-                const user = await user_1.User.findById(userObjectId).select('email name');
+                const user = await user_1.User.findById(userObjectId).select("email name");
                 if (user && user.email) {
                     const emailSubject = title;
                     const emailText = `Hi ${user.name},\n\n${message}\n\nRegards,\nTeam`;
@@ -74,21 +74,21 @@ const createNotification = async (params, workspaceId, key) => {
                 }
             }
             catch (emailError) {
-                console.error('Error sending email notification:', emailError.message);
+                console.error("Error sending email notification:", emailError.message);
                 // Don't fail the notification creation if email fails
             }
         }
         return {
             success: true,
             notification: notification.toObject(),
-            message: 'Notification created and sent successfully',
+            message: "Notification created and sent successfully",
         };
     }
     catch (error) {
-        console.error('Error in createNotification:', error.message);
+        console.error("Error in createNotification:", error.message);
         return {
             success: false,
-            message: error.message || 'Error creating notification',
+            message: error.message || "Error creating notification",
         };
     }
 };
@@ -101,12 +101,12 @@ const getUserNotifications = async (params) => {
         const validLimit = Math.min(Math.max(1, limit), 100); // Max 100 items per page
         const skip = (validPage - 1) * validLimit;
         // Convert userId to ObjectId if it's a string
-        const userObjectId = typeof userId === 'string' ? new mongoose_1.default.Types.ObjectId(userId) : userId;
+        const userObjectId = typeof userId === "string" ? new mongoose_1.default.Types.ObjectId(userId) : userId;
         // Get total count
         const total = await notification_modal_1.default.countDocuments({ userId: userObjectId });
         // Get paginated notifications
         const notifications = await notification_modal_1.default.find({ userId: userObjectId })
-            .populate('forId')
+            .populate("forId")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(validLimit)
@@ -121,10 +121,10 @@ const getUserNotifications = async (params) => {
         };
     }
     catch (error) {
-        console.error('Error in getUserNotifications:', error.message);
+        console.error("Error in getUserNotifications:", error.message);
         return {
             success: false,
-            message: error.message || 'Error fetching notifications',
+            message: error.message || "Error fetching notifications",
         };
     }
 };
@@ -133,7 +133,7 @@ const getUserUnreadNotifications = async (params) => {
     try {
         const { userId, subId } = params;
         // Convert userId to ObjectId if it's a string
-        const userObjectId = typeof userId === 'string' ? new mongoose_1.default.Types.ObjectId(userId) : userId;
+        const userObjectId = typeof userId === "string" ? new mongoose_1.default.Types.ObjectId(userId) : userId;
         const query = {
             userId: userObjectId,
             isRead: false,
@@ -144,9 +144,11 @@ const getUserUnreadNotifications = async (params) => {
         else {
             query.subId = { $exists: false };
         }
-        console.log('Unread notifications query:', query);
+        console.log("Unread notifications query:", query);
         // Get unread notifications
-        const notifications = await notification_modal_1.default.find(query).sort({ createdAt: -1 }).lean();
+        const notifications = await notification_modal_1.default.find(query)
+            .sort({ createdAt: -1 })
+            .lean();
         return {
             success: true,
             notifications,
@@ -154,39 +156,33 @@ const getUserUnreadNotifications = async (params) => {
         };
     }
     catch (error) {
-        console.error('Error in getUserUnreadNotifications:', error.message);
+        console.error("Error in getUserUnreadNotifications:", error.message);
         return {
             success: false,
-            message: error.message || 'Error fetching unread notifications',
+            message: error.message || "Error fetching unread notifications",
         };
     }
 };
 exports.getUserUnreadNotifications = getUserUnreadNotifications;
 const readUserNotifications = async (params) => {
     try {
-        const { userId, accountId } = params;
+        const { userId } = params;
         // Convert userId to ObjectId if it's a string
-        const userObjectId = typeof userId === 'string' ? new mongoose_1.default.Types.ObjectId(userId) : userId;
+        const userObjectId = typeof userId === "string" ? new mongoose_1.default.Types.ObjectId(userId) : userId;
         // Build query based on accountId
         const query = {
             userId: userObjectId,
         };
-        if (accountId) {
-            query.subId = accountId;
-        }
-        else {
-            query.subId = { $exists: false };
-        }
-        console.log('Read notifications query:', query);
+        console.log("Read notifications query:", query);
         // Mark notifications as read based on query
         await notification_modal_1.default.updateMany(query, { $set: { isRead: true } });
         return { success: true };
     }
     catch (error) {
-        console.error('Error in readUserNotifications:', error.message);
+        console.error("Error in readUserNotifications:", error.message);
         return {
             success: false,
-            message: error.message || 'Error marking notifications as read',
+            message: error.message || "Error marking notifications as read",
         };
     }
 };
@@ -195,16 +191,16 @@ const deleteUserNotifications = async (params) => {
     try {
         const { userId } = params;
         // Convert userId to ObjectId if it's a string
-        const userObjectId = typeof userId === 'string' ? new mongoose_1.default.Types.ObjectId(userId) : userId;
+        const userObjectId = typeof userId === "string" ? new mongoose_1.default.Types.ObjectId(userId) : userId;
         // Delete all notifications
         await notification_modal_1.default.deleteMany({ userId: userObjectId });
         return { success: true };
     }
     catch (error) {
-        console.error('Error in deleteUserNotifications:', error.message);
+        console.error("Error in deleteUserNotifications:", error.message);
         return {
             success: false,
-            message: error.message || 'Error deleting notifications',
+            message: error.message || "Error deleting notifications",
         };
     }
 };

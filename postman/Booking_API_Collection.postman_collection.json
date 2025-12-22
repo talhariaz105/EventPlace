@@ -1,0 +1,1135 @@
+{
+    "info": {
+        "_postman_id": "booking-api-collection",
+        "name": "Booking API Collection",
+        "description": "Complete API collection for managing bookings in EventPlace platform",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Public",
+            "item": [
+                {
+                    "name": "Check Availability",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"serviceId\": \"{{serviceId}}\",\n  \"checkIn\": \"2025-12-25T10:00:00.000Z\",\n  \"checkOut\": \"2025-12-25T18:00:00.000Z\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/check-availability",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                "check-availability"
+                            ]
+                        },
+                        "description": "Check if a service is available for the specified dates"
+                    },
+                    "response": [
+                        {
+                            "name": "Available",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"serviceId\": \"676123456789abcdef012345\",\n  \"checkIn\": \"2025-12-25T10:00:00.000Z\",\n  \"checkOut\": \"2025-12-25T18:00:00.000Z\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/check-availability",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "check-availability"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"available\": true\n}"
+                        },
+                        {
+                            "name": "Not Available",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"serviceId\": \"676123456789abcdef012345\",\n  \"checkIn\": \"2025-12-25T10:00:00.000Z\",\n  \"checkOut\": \"2025-12-25T18:00:00.000Z\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/check-availability",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "check-availability"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"available\": false\n}"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Customer",
+            "item": [
+                {
+                    "name": "Create Booking",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"serviceId\": \"{{serviceId}}\",\n  \"checkIn\": \"2025-12-25T10:00:00.000Z\",\n  \"checkOut\": \"2025-12-25T18:00:00.000Z\",\n  \"guests\": 5,\n  \"totalAmount\": 150.00,\n  \"message\": \"Birthday party celebration\",\n  \"type\": \"private\",\n  \"packages\": [\"packageId1\", \"packageId2\"]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings"
+                            ]
+                        },
+                        "description": "Create a new booking (Customer only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"serviceId\": \"676123456789abcdef012345\",\n  \"checkIn\": \"2025-12-25T10:00:00.000Z\",\n  \"checkOut\": \"2025-12-25T18:00:00.000Z\",\n  \"guests\": 5,\n  \"totalAmount\": 150.00,\n  \"message\": \"Birthday party\",\n  \"type\": \"private\",\n  \"packages\": [\"pkg1\", \"pkg2\"]\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings"
+                                    ]
+                                }
+                            },
+                            "status": "Created",
+                            "code": 201,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"user\": \"675123456789abcdef012345\",\n  \"service\": \"676123456789abcdef012345\",\n  \"checkIn\": \"2025-12-25T10:00:00.000Z\",\n  \"checkOut\": \"2025-12-25T18:00:00.000Z\",\n  \"guests\": 5,\n  \"totalAmount\": 150.00,\n  \"status\": \"pending\",\n  \"packages\": [\"pkg1\", \"pkg2\"],\n  \"createdAt\": \"2025-12-22T10:00:00.000Z\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get My Bookings",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/my-bookings?page=1&limit=10&status=booked&search=party",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                "my-bookings"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "booked"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "party"
+                                }
+                            ]
+                        },
+                        "description": "Get all bookings for logged-in customer"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/my-bookings?page=1&limit=10",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "my-bookings"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"total\": 25,\n  \"page\": 1,\n  \"totalPages\": 3,\n  \"bookings\": [\n    {\n      \"_id\": \"676123456789abcdef012345\",\n      \"service\": {\n        \"_id\": \"676123456789abcdef012345\",\n        \"title\": \"Party Hall A\",\n        \"price\": 150\n      },\n      \"checkIn\": \"2025-12-25T10:00:00.000Z\",\n      \"checkOut\": \"2025-12-25T18:00:00.000Z\",\n      \"status\": \"booked\",\n      \"totalAmount\": 150\n    }\n  ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Cancel Booking",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/:id/cancel",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                ":id",
+                                "cancel"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{bookingId}}"
+                                }
+                            ]
+                        },
+                        "description": "Request cancellation of a booking (Customer only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "PATCH",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345/cancel",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345",
+                                        "cancel"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"status\": \"pending\",\n  \"cancelRequest\": true,\n  \"cancelRequestDate\": \"2025-12-22T10:00:00.000Z\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Request Extension",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"newCheckOut\": \"2025-12-25T22:00:00.000Z\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/:id/extend",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                ":id",
+                                "extend"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{bookingId}}"
+                                }
+                            ]
+                        },
+                        "description": "Request to extend booking checkout time (Customer only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"newCheckOut\": \"2025-12-25T22:00:00.000Z\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345/extend",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345",
+                                        "extend"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"extensionRequest\": true,\n  \"extensionDetails\": {\n    \"requestedCheckOut\": \"2025-12-25T22:00:00.000Z\",\n    \"additionalAmount\": 50,\n    \"status\": \"pending\"\n  }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Upcoming Bookings",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/upcoming",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                "upcoming"
+                            ]
+                        },
+                        "description": "Get upcoming bookings for customer or vendor"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/upcoming",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "upcoming"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "[\n  {\n    \"_id\": \"676123456789abcdef012345\",\n    \"service\": {\n      \"title\": \"Party Hall A\",\n      \"location\": \"Downtown\"\n    },\n    \"checkIn\": \"2025-12-25T10:00:00.000Z\",\n    \"checkOut\": \"2025-12-25T18:00:00.000Z\",\n    \"status\": \"booked\"\n  }\n]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Vendor",
+            "item": [
+                {
+                    "name": "Get Vendor Bookings",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/vendor/bookings?page=1&limit=10&status=pending",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                "vendor",
+                                "bookings"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "pending"
+                                }
+                            ]
+                        },
+                        "description": "Get all bookings for vendor's services"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/vendor/bookings?page=1&limit=10",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "vendor",
+                                        "bookings"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"total\": 30,\n  \"page\": 1,\n  \"totalPages\": 3,\n  \"bookings\": [\n    {\n      \"_id\": \"676123456789abcdef012345\",\n      \"user\": {\n        \"fullName\": \"John Doe\",\n        \"email\": \"john@example.com\"\n      },\n      \"service\": {\n        \"title\": \"Party Hall A\"\n      },\n      \"status\": \"pending\",\n      \"totalAmount\": 150\n    }\n  ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Update Booking Status",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"booked\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/:id/status",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                ":id",
+                                "status"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{bookingId}}"
+                                }
+                            ]
+                        },
+                        "description": "Accept or reject booking request (Vendor only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success - Accept",
+                            "originalRequest": {
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"status\": \"booked\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345/status",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345",
+                                        "status"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"status\": \"booked\",\n  \"bookingResponseTime\": \"2025-12-22T10:00:00.000Z\"\n}"
+                        },
+                        {
+                            "name": "Success - Reject",
+                            "originalRequest": {
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"status\": \"rejected\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345/status",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345",
+                                        "status"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"status\": \"rejected\",\n  \"bookingResponseTime\": \"2025-12-22T10:00:00.000Z\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Process Refund",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refundType\": \"Full\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/:id/refund",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                ":id",
+                                "refund"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{bookingId}}"
+                                }
+                            ]
+                        },
+                        "description": "Process refund for cancelled booking (Vendor only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success - Full Refund",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"refundType\": \"Full\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345/refund",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345",
+                                        "refund"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"refunded\": true,\n  \"refundAmount\": 150,\n  \"refundType\": \"Full\",\n  \"status\": \"canceled\"\n}"
+                        },
+                        {
+                            "name": "Success - Partial Refund",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"refundType\": \"Partial\",\n  \"customAmount\": 75\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345/refund",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345",
+                                        "refund"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"refunded\": true,\n  \"refundAmount\": 75,\n  \"refundType\": \"Partial\",\n  \"status\": \"canceled\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Handle Extension Request",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"action\": \"accepted\",\n  \"paymentMethodId\": \"pm_1234567890\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/:id/extension",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                ":id",
+                                "extension"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{bookingId}}"
+                                }
+                            ]
+                        },
+                        "description": "Accept or reject extension request (Vendor only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success - Accept",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"action\": \"accepted\",\n  \"paymentMethodId\": \"pm_1234567890\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345/extension",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345",
+                                        "extension"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"checkOut\": \"2025-12-25T22:00:00.000Z\",\n  \"totalAmount\": 200,\n  \"extensionRequest\": false,\n  \"extensionDetails\": {\n    \"status\": \"accepted\"\n  }\n}"
+                        },
+                        {
+                            "name": "Success - Reject",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"action\": \"rejected\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345/extension",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345",
+                                        "extension"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"extensionRequest\": false,\n  \"extensionDetails\": {\n    \"status\": \"rejected\"\n  }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Booking Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/vendor/stats",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                "vendor",
+                                "stats"
+                            ]
+                        },
+                        "description": "Get booking statistics for vendor"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/vendor/stats",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "vendor",
+                                        "stats"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "[\n  {\n    \"_id\": \"pending\",\n    \"count\": 5,\n    \"totalRevenue\": 750\n  },\n  {\n    \"_id\": \"booked\",\n    \"count\": 20,\n    \"totalRevenue\": 3000\n  },\n  {\n    \"_id\": \"completed\",\n    \"count\": 50,\n    \"totalRevenue\": 7500\n  },\n  {\n    \"_id\": \"canceled\",\n    \"count\": 3,\n    \"totalRevenue\": 450\n  }\n]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "Get All Bookings",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings?page=1&limit=10&status=booked&search=party",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "booked"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "party"
+                                }
+                            ]
+                        },
+                        "description": "Get all bookings in the system (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings?page=1&limit=10",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        }
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"total\": 100,\n  \"page\": 1,\n  \"totalPages\": 10,\n  \"bookings\": [\n    {\n      \"_id\": \"676123456789abcdef012345\",\n      \"user\": {\n        \"fullName\": \"John Doe\"\n      },\n      \"service\": {\n        \"title\": \"Party Hall A\"\n      },\n      \"status\": \"booked\",\n      \"totalAmount\": 150\n    }\n  ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Booking by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{bookingId}}"
+                                }
+                            ]
+                        },
+                        "description": "Get detailed booking information by ID"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"user\": {\n    \"_id\": \"675123456789abcdef012345\",\n    \"fullName\": \"John Doe\",\n    \"email\": \"john@example.com\"\n  },\n  \"service\": {\n    \"_id\": \"676123456789abcdef012345\",\n    \"title\": \"Party Hall A\",\n    \"location\": \"Downtown\",\n    \"price\": 150\n  },\n  \"checkIn\": \"2025-12-25T10:00:00.000Z\",\n  \"checkOut\": \"2025-12-25T18:00:00.000Z\",\n  \"guests\": 5,\n  \"totalAmount\": 150,\n  \"status\": \"booked\",\n  \"packages\": [\"pkg1\", \"pkg2\"],\n  \"createdAt\": \"2025-12-22T10:00:00.000Z\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Update Booking",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"completed\",\n  \"guests\": 6\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{bookingId}}"
+                                }
+                            ]
+                        },
+                        "description": "Update booking details (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "PATCH",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"status\": \"completed\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"status\": \"completed\",\n  \"guests\": 6,\n  \"updatedAt\": \"2025-12-22T10:00:00.000Z\"\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete Booking",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/bookings/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "bookings",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{bookingId}}"
+                                }
+                            ]
+                        },
+                        "description": "Soft delete a booking (Admin only)"
+                    },
+                    "response": [
+                        {
+                            "name": "Success",
+                            "originalRequest": {
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{baseUrl}}/v1/bookings/676123456789abcdef012345",
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "path": [
+                                        "v1",
+                                        "bookings",
+                                        "676123456789abcdef012345"
+                                    ]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [],
+                            "cookie": [],
+                            "body": "{\n  \"_id\": \"676123456789abcdef012345\",\n  \"isDeleted\": true\n}"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:3000",
+            "type": "string"
+        },
+        {
+            "key": "accessToken",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "serviceId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "bookingId",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}
