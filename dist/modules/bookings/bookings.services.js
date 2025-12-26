@@ -60,6 +60,7 @@ const calculateBookingPrice = (pricingModel, checkInTime, checkOutTime, serviceD
             }
             const checkInLocal = start;
             const checkOutLocal = end;
+            console.log(`Day: ${dayName}, Service: ${serviceStart.format("HH:mm")}-${serviceEnd.format("HH:mm")}, Booking: ${checkInLocal.format("HH:mm")}-${checkOutLocal.format("HH:mm")} (${serviceTimezone})`);
             if (pricingModel === "hourly") {
                 if (checkOutLocal.isAfter(serviceStart) &&
                     checkInLocal.isBefore(serviceEnd)) {
@@ -72,13 +73,21 @@ const calculateBookingPrice = (pricingModel, checkInTime, checkOutTime, serviceD
                     if (actualEnd.isAfter(actualStart)) {
                         const hours = dayjs_1.default.duration(actualEnd.diff(actualStart)).asHours();
                         totalPrice += hours * dayPrice;
+                        console.log(`  ✓ Hourly: ${hours.toFixed(2)} hours × $${dayPrice} = $${(hours * dayPrice).toFixed(2)}`);
                     }
+                }
+                else {
+                    console.log(`  ✗ No overlap with service hours`);
                 }
             }
             else if (pricingModel === "daily") {
                 if (checkInLocal.isBefore(serviceEnd) &&
                     checkOutLocal.isAfter(serviceStart)) {
                     totalPrice += dayPrice;
+                    console.log(`  ✓ Daily: $${dayPrice}`);
+                }
+                else {
+                    console.log(`  ✗ No overlap with service hours`);
                 }
             }
         }
@@ -422,20 +431,6 @@ const getAllBookingsForCustomer = async (customerId, queryParams) => {
     const limit = Number(queryParams.limit) || 10;
     const isDeleted = queryParams.isDeleted === true;
     const filterQuery = buildFilterQuery(queryParams);
-    const searchQuery = queryParams.search
-        ? {
-            $or: [
-                { "service.title": { $regex: queryParams.search, $options: "i" } },
-                {
-                    "service.description": {
-                        $regex: queryParams.search,
-                        $options: "i",
-                    },
-                },
-                { "vendor.fullName": { $regex: queryParams.search, $options: "i" } },
-            ],
-        }
-        : {};
     const query = [
         { $match: { user: new mongoose_1.default.Types.ObjectId(customerId), isDeleted } },
         ...filterQuery,
@@ -457,10 +452,32 @@ const getAllBookingsForCustomer = async (customerId, queryParams) => {
             },
         },
         { $unwind: { path: "$vendor", preserveNullAndEmptyArrays: true } },
-        {
-            $match: searchQuery,
-        },
     ];
+    // Add search filter if provided
+    if (queryParams.search) {
+        query.push({
+            $match: {
+                $or: [
+                    { "service.name": { $regex: queryParams.search, $options: "i" } },
+                    {
+                        "service.description": {
+                            $regex: queryParams.search,
+                            $options: "i",
+                        },
+                    },
+                    { "vendor.fullName": { $regex: queryParams.search, $options: "i" } },
+                ],
+            },
+        });
+    }
+    // Add listing type filter if provided
+    if (queryParams.listingtype) {
+        query.push({
+            $match: {
+                "service.listingtype": queryParams.listingtype,
+            },
+        });
+    }
     if (queryParams.serviceTypeId) {
         query.push({
             $match: {
@@ -539,7 +556,7 @@ const createBooking = async (params) => {
         price: Number(pkg.price) || 0,
         priceUnit: pkg.priceUnit || "fixed",
     })) || [];
-    const calculatedPrice = (0, exports.calculateBookingPrice)("daily", // Assuming daily pricing model; adjust as needed
+    const calculatedPrice = (0, exports.calculateBookingPrice)(findService.priceUnit || "daily", // Assuming daily pricing model; adjust as needed
     checkIn, checkOut, findService.serviceDays, filterPakages, findService.timeZone);
     console.log("Calculated Price:", calculatedPrice);
     // Calculate total amount

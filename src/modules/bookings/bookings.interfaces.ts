@@ -99,6 +99,8 @@ export interface IBookingQueryParams {
   search?: string;
   serviceTypeId?: string;
   isDeleted?: boolean;
+  listingtype?:"venue" | "vendor";
+  
 }
 
 export interface ICheckAvailabilityParams {

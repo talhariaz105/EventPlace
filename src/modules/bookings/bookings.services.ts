@@ -29,7 +29,7 @@ dayjs.extend(isSameOrBefore);
  * Calculate booking price based on pricing model (hourly/daily) and service days
  */
 export const calculateBookingPrice = (
-  pricingModel: "hourly" | "daily",
+  pricingModel: "hourly" | "daily" | "fixed",
   checkInTime: Date,
   checkOutTime: Date,
   serviceDays: Array<{
@@ -568,21 +568,6 @@ export const getAllBookingsForCustomer = async (
   const isDeleted = queryParams.isDeleted === true;
   const filterQuery = buildFilterQuery(queryParams);
 
-  const searchQuery = queryParams.search
-    ? {
-        $or: [
-          { "service.title": { $regex: queryParams.search, $options: "i" } },
-          {
-            "service.description": {
-              $regex: queryParams.search,
-              $options: "i",
-            },
-          },
-          { "vendor.fullName": { $regex: queryParams.search, $options: "i" } },
-        ],
-      }
-    : {};
-
   const query: any[] = [
     { $match: { user: new mongoose.Types.ObjectId(customerId), isDeleted } },
     ...filterQuery,
@@ -604,10 +589,34 @@ export const getAllBookingsForCustomer = async (
       },
     },
     { $unwind: { path: "$vendor", preserveNullAndEmptyArrays: true } },
-    {
-      $match: searchQuery,
-    },
   ];
+
+  // Add search filter if provided
+  if (queryParams.search) {
+    query.push({
+      $match: {
+        $or: [
+          { "service.name": { $regex: queryParams.search, $options: "i" } },
+          {
+            "service.description": {
+              $regex: queryParams.search,
+              $options: "i",
+            },
+          },
+          { "vendor.fullName": { $regex: queryParams.search, $options: "i" } },
+        ],
+      },
+    });
+  }
+
+  // Add listing type filter if provided
+  if (queryParams.listingtype) {
+    query.push({
+      $match: {
+        "service.listingtype": queryParams.listingtype,
+      },
+    });
+  }
 
   if (queryParams.serviceTypeId) {
     query.push({
@@ -654,7 +663,7 @@ export const updateBooking = async (bookingId: string, updates: any) => {
     { _id: bookingId, isDeleted: false },
     filteredUpdates,
     { new: true, runValidators: true }
-  );
+  );  
 
   if (!booking) {
     throw new ApiError("Booking not found", httpStatus.NOT_FOUND);
@@ -724,7 +733,7 @@ export const createBooking = async (params: ICreateBookingParams) => {
       })) || [];
 
   const calculatedPrice = calculateBookingPrice(
-    "daily", // Assuming daily pricing model; adjust as needed
+    findService.priceUnit || "daily", // Assuming daily pricing model; adjust as needed
     checkIn,
     checkOut,
     findService.serviceDays,
